@@ -1,6 +1,6 @@
 \documentclass[12pt,a4paper,twoside]{report}
 \usepackage[utf8]{vietnam}
-\usepackage[top=25mm,right=20mm,bottom=25mm,left=30mm]{geometry}
+\usepackage[top=20mm,right=20mm,bottom=20mm,left=30mm]{geometry}
 \usepackage[unicode]{hyperref}
 \usepackage{color,fancyhdr,graphicx,indentfirst,listings}
 
@@ -13,9 +13,10 @@
 
 \renewcommand{\headrulewidth}{1pt}
 \renewcommand{\footrulewidth}{1pt}
-
 \renewcommand{\thesection}{\arabic{section}}
 \renewcommand{\thechapter}{\Roman{chapter}}
+
+\setlength{\headheight}{18pt}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -47,7 +48,11 @@
 
 \newpage
 \tableofcontents
+\listoftables
+\listoffigures
 \newpage
+
+\setlength{\parskip}{1em}
 
 % Giới thiệu đề tài
 \include{chapters/intro}

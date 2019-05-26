@@ -25,7 +25,7 @@ Như vậy, đã thiết lập xong các gói dùng để triển khai ứng d�
 Để tạo giao diện đa nền tảng, tối ưu cho các thiết bị di động, chúng tôi sử dụng Bootstrap để quản lý tính responsive cho trang web. Ngoài ra, chúng tôi còn sử dụng thêm vài icon nữa nên sẽ lựa chọn Font Awesome vào website.
 \subsection{Trang chủ}
 Chúng tôi hiển thị 1 form để người dùng nhập vào URL cần kiểm tra.
-\\\par
+\par
 Để tránh kẻ xấu lợi dụng website chúng tôi để liên tục spam request đến các trang web khác. Chúng tôi sử dụng phương thức POST cho form và sử dụng thêm reCAPTCHA nhằm xác thực người dùng.
 \subsection{Trang kiểm tra}
 Trang này chúng tôi dùng để hiện thị thông tin được phân tích từ website của người dùng nhập vào. Kết quả sẽ được hiển thị bằng thẻ \texttt{<table>} gồm các cột:
@@ -45,15 +45,15 @@ Ngoài ra, chúng tôi sử dụng đoạn JavaScript để tính toán điểm 
 Nút Trở lại được đặt ở cuối bảng cho phép người dùng quay lại trang chủ để có thể kiểm tra trang web khác.
 \subsection{Trang thông tin}
 Đây là nhóm các trang web chúng tôi dùng để hiển thị đến người dùng các trang như Liên hệ, Giới thiệu.
-\\\par
+\par
 Những thủ thuật và tiêu chuẩn đánh giá của chúng tôi cũng sẽ được thêm vào nhóm này.
 \section{Xử lý backend}
 Các file chúng tôi nhắc đến bên dưới nếu không có giải thích gì thêm sẽ mặc nhiên nằm trong thư mục \texttt{checkweb} mà chúng tôi đã tạo ở những phần trước.
-\\\par
+\par
 Để có thể dễ dàng quản lý các phần lập trình khi thêm vào, chúng tôi tạo thêm file \texttt{functions.py}. Tạo file \texttt{urls.py} để khai báo và quản lý các URL cho ứng dụng.
-\\\par
+\par
 Khi người dùng click vào nút submit trên trình duyệt, dữ liệu sẽ được truyền tới file \texttt{views.py} để xử lý, tại đây chúng tôi gọi đến hàm kiểm tra tính xác thực của CAPTCHA trong file \texttt{functions.py}.
-\\\par
+\par
 \texttt{views.py}
 \begin{lstlisting}[language=Python]
 from .functions import reCaptcha
@@ -82,7 +82,7 @@ def reCaptcha(request):
 \end{lstlisting}
 \par
 Nếu người dùng xác thực thành công thì sẽ trả về kết quả là \texttt{True} và tiếp tục thực thi bên trong câu lệnh \texttt{if}. Tiếp theo, chúng tôi gọi hàm \texttt{parsing()} với tham số \texttt{domain} là URL website người dùng nhập vào để phân tách dữ liệu.
-\\\par
+\par
 \texttt{views.py}
 \begin{lstlisting}[language=Python]
 if reCaptcha(request):
@@ -117,7 +117,7 @@ def parsing(domain):
 \end{lstlisting}
 \par
 Đoạn code sẽ lấy ra tiêu đề của trang web và trả về kết quả vào biến \texttt{value}. Chúng tôi quay lại file \texttt{views.py} để lấy giá trị này và hiển thị ra giao diện người dùng.
-\\\par
+\par
 \texttt{views.py}
 \begin{lstlisting}[language=Python]
 if(parsing(domain)):
@@ -126,7 +126,7 @@ if(parsing(domain)):
 \end{lstlisting}
 \par
 Do đang sử dụng template do Django cung cấp nên file \texttt{check.html} sẽ được lưu tại \texttt{lvtn\textbackslash templates\textbackslash checkweb\textbackslash check.html}. Chúng ta có thể gọi giá trị ra giao diện bằng biến có tên là key tương ứng của biến \texttt{context}.
-\\\par
+\par
 \texttt{check.html}
 \begin{lstlisting}[language=HTML]
 {% extends "base.html" %}

@@ -2,7 +2,7 @@
 Phần này chúng tôi sẽ giới thiệu cũng như trang bị những kiến thức cơ bản để sử dụng những công cụ được liệt kê ở phần trước.
 \section{Ngôn ngữ Python}
 Chúng tôi sử dụng bài viết tham khảo\cite{python} để giới thiệu về các chức năng mà chúng tôi dùng cho dự án.
-\\\par
+\par
 Phiên bản sử dụng: 3.7.1
 \begin{itemize}
 	\item Biến (Variable): Không giống với các ngôn ngữ khác, Python không có câu lệnh riêng biệt để khai báo biến. Biến không cần phải khai báo kiểu giá trị nào và có thể thay đổi dựa vào giá trị mà nó được gán.
@@ -22,7 +22,7 @@ print(a)
 	\item Toán tử (Operator):
 	\begin{itemize}
 		\item Số học:
-		\begin{table}[h!]
+		\begin{table}[!ht]
 			\centering
 			\begin{tabular}{|c|l|}
 				\hline
@@ -44,7 +44,7 @@ print(a)
 			\caption{Toán tử Số học}
 		\end{table}
 		\item So sánh:
-		\begin{table}[h!]
+		\begin{table}[!ht]
 			\centering
 			\begin{tabular}{|c|l|}
 				\hline
@@ -64,7 +64,7 @@ print(a)
 			\caption{Toán tử So sánh}
 		\end{table}
 		\item Logic:
-		\begin{table}[h!]
+		\begin{table}[!ht]
 			\centering
 			\begin{tabular}{|c|l|}
 				\hline
@@ -78,7 +78,7 @@ print(a)
 			\caption{Toán tử Logic}
 		\end{table}
 		\item Identity:
-		\begin{table}[h!]
+		\begin{table}[!ht]
 			\centering
 			\begin{tabular}{|c|l|}
 				\hline
@@ -90,7 +90,7 @@ print(a)
 			\caption{Toán tử Identity}
 		\end{table}
 		\item Membership:
-		\begin{table}[h!]
+		\begin{table}[!ht]
 			\centering
 			\begin{tabular}{|c|l|}
 				\hline
@@ -163,7 +163,7 @@ print(p.age)
 >>>22
 	\end{lstlisting}
 	\item Module: Có thể xem module là 1 bộ thư viện mã code, được lưu bởi tệp hoặc thư mục tách biệt với project đang thực thi, được nhúng vào để tái sử dụng những bộ code chứa trong đó.
-	\\\par
+	\par
 	Để sử dụng các hàm hoặc lớp trong file \texttt{mymodule.py}, ta sử dụng lệnh sau:
 	\begin{lstlisting}[language=Python]
 import mymodule
@@ -171,7 +171,7 @@ import mymodule
 from mymodule import myfunc
 	\end{lstlisting}
 	\item PIP: Là trình quản lý gói (package) hoặc module dành cho Python. Gói là nơi chứa tất cả các file cần thiết cho 1 module.
-	\\\par
+	\par
 	Để cài đặt 1 gói trong Python, sử dụng lệnh sau:
 	\begin{lstlisting}[language=bash]
 \>pip install Django
@@ -188,9 +188,9 @@ except NameError:
 \end{itemize}
 \section{Framework Django}
 Django là 1 framework Python web cấp cao, thúc đẩy phát triển nhanh chóng, gọn gàng và tiện dụng. Được xây dựng bởi các nhà lập trình viên có kinh nghiệm, xử lý được các vấn đề rắc rối khi phát triển web, do đó người dùng chỉ cần quan tâm hoàn thiện các chức năng cho web mà không cần phải quá lo lắng về nền tảng phía sau. Và quan trọng nó là mã nguồn mở và miễn phí.
-\\\par
+\par
 Chúng tôi sẽ sử dụng mục tài liệu\cite{django} tại trang chủ của Django framework để trình bày những khái niệm và cách để hiện thực ứng dụng của chúng tôi.
-\\\par
+\par
 Phiên bản sử dụng: 2.1.4
 \begin{itemize}
 	\item Sau khi cài đặt xong Django từ trình quản lý gói PIP của Python, dùng lệnh sau để khởi tạo project mới có tên là \texttt{lvtn}:
@@ -220,7 +220,7 @@ lvtn\
 	\end{lstlisting}
 	Khi server đang chạy, truy cập vào địa chỉ \url{http://127.0.0.1:8000} trên trình duyệt web để thấy ứng dụng đang được trình diễn.
 	\item Tạo app mới: Mỗi ứng dụng được viết trong Django bao gồm 1 gói Python tuân thủ theo 1 quy ước nhất định. Django đi kèm với 1 tiện ích tự động tạo cấu trúc thư mục cơ bản của 1 ứng dụng, do đó người lập trình chỉ cần quan tâm đến việc phát triển code bên trong mà thôi.
-	\\\par
+	\par
 	Tạo app \texttt{checkweb}	có nhiệm vụ xử lý chính cho project của chúng tôi.
 	\begin{lstlisting}[language=bash]
 \>python manage.py startapp checkweb
@@ -244,7 +244,7 @@ checkweb\
 		\item \texttt{models.py}: Django hỗ trợ các phương thức để xử lý cơ sở dữ liệu mà không cần sử dụng đến các câu lệnh truy vấn SQL trực tiếp.
 		\item \texttt{tests.py}: Được người dùng sử dụng để triển khai các kịch bản thử nghiệm và rà soát lỗi trước khi phát hành ứng dụng.
 		\item \texttt{views.py}: Đóng vai trò xử lý trung tâm của ứng dụng, quản lý việc hiển thị, kết nối đến cơ sở dữ liệu và thực thi các hàm do lập trình viên thêm vào ứng dụng.
-		\\\par
+		\par
 		Sau khi tạo xong app, cần phải khai báo trong project bằng các thêm dòng sau vào file \texttt{lvtn\textbackslash settings.py}:
 		\begin{lstlisting}[language=Python]
 INSTALLED_APPS = [
@@ -266,7 +266,7 @@ INSTALLED_APPS = [
 \>python manage.py migrate
 	\end{lstlisting}
 	\item Trang quản trị admin: Một trong những ưu điểm của Django so với các framework khác là nó cung cấp trang Django administration giúp hiển trị trực quan cơ sở dữ liệu do người dùng thiết lập, cho phép xem, tạo mới, chỉnh sửa, xóa và nhiều tính năng khác nữa.
-	\\\par
+	\par
 	Để có thể truy cập vào trang quản trị thì trước tiên cần phải tạo tài khoản \texttt{superuser}:
 	\begin{lstlisting}[language=bash]
 \>python manage.py createsuperuser
@@ -278,7 +278,7 @@ INSTALLED_APPS = [
 	\end{lstlisting}
 	Sau khi điền đầy đủ các thông tin trên thì có thể đăng nhập tài khoản để truy cập vào trang quản trị tại địa chỉ: \url{http://127.0.0.1:8000/admin/}
 	\item Class-based view: Đây là chức năng được Django hỗ trợ, giúp lập trình viên ít phải viết code hơn để hiện thị 1 giao diện lên trình duyệt web. Nó hỗ trợ tốt trong việc truyền tham số, lấy giá trị từ model và có thể dễ dàng tùy chỉnh theo ý muốn.
-	\\\par
+	\par
 	Để sử dụng, cần phải thêm module vào file muốn dùng nó. Đoạn code sau có chức năng hiển thị file \texttt{about.html} ra đường dẫn \url{http://127.0.0.1:8000/about/}.
 	\begin{lstlisting}[language=Python]
 from django.urls import path
@@ -308,7 +308,7 @@ urlpatterns = [
 \section{Thư viện Python}
 \subsection{Requests}
 Tham khảo\cite{requests}.
-\\\par
+\par
 Phiên bản sử dụng: 2.21.0
 \begin{itemize}
 	\item Cách cài đặt:
@@ -323,7 +323,7 @@ page = requests.get(url)
 \end{itemize}
 \subsection{Lxml}
 Tham khảo\cite{lxml}.
-\\\par
+\par
 Phiên bản sử dụng: 4.2.5
 \begin{itemize}
 	\item Cách cài đặt:
@@ -340,7 +340,7 @@ value = content.xpath("//title/text()")
 \section{Thư viện giao diện}
 \subsection{Bootstrap}
 Tham khảo\cite{bootstrap}.
-\\\par
+\par
 Phiên bản sử dụng: 4.1.3
 \begin{itemize}
  	\item CSS: Sao chép và dán dòng code bên dưới vào trong thẻ \texttt{<head>} trước tất cả các định dạng khác để tải CSS của Bootstrap.
@@ -359,9 +359,9 @@ bootstrap.min.js"></script>
 \end{itemize}
 \subsection{Font Awesome}
 Tham khảo\cite{awesome}.
-\\\par
+\par
 Phiên bản sử dụng: 5.5.0
-\\\par
+\par
 Trước khi sử dụng được, cần phải chèn dòng code bên dưới vào thẻ \texttt{<head>} nằm ở đầu trang web.
 \begin{lstlisting}[language=HTML]
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/
@@ -375,9 +375,9 @@ all.css">
 \section{Bảo mật}
 \subsection{reCAPTCHA}
 Tham khảo\cite{captcha}.
-\\\par
+\par
 Phiên bản sử dụng: reCAPTCHA v2
-\\\par
+\par
 Cách đơn giản để sử dụng reCAPTCHA vào trang web bằng cách nhúng mã JavaScript và thẻ \texttt{g-recaptcha}. Thẻ \texttt{g-recaptcha} là 1 thẻ \texttt{DIV} với tên class là \texttt{"g-recaptcha"}, có thuộc tính \texttt{data-sitekey} chứa Site key được cấp khi đăng ký sử dụng reCAPTCHA.
 \begin{lstlisting}[language=HTML]
 <html>
@@ -416,9 +416,9 @@ Dựa vào kết quả này, chúng tôi có thể biết được người dùn
 \section{Triển khai ứng dụng}
 \subsection{Heroku platform}
 Tham khảo\cite{heroku}.
-\\\par
+\par
 Đầu tiên và quan trọng nhất, các ứng dụng Heroku yêu cầu 1 file \texttt{Procfile} để cài đặt nền tảng sử dụng, được đặt tại thư mục gốc.
-\\\par
+\par
 \texttt{Procfile}
 \begin{lstlisting}[language=sh]
 web: gunicorn myproject.wsgi
@@ -430,7 +430,7 @@ File \texttt{Procfile} này yêu cầu \texttt{Gunicorn}, 1 máy chủ web đư�
 \end{lstlisting}
 \par
 Thay đổi trong file \texttt{settings.py} của ứng dụng Django. Khi sử dụng Heroku, các thông tin nhạy cảm sẽ được lưu trữ trong môi trường được gọi là config vars. Nó bao gồm các thông tin để kết nối đến cơ sở dữ liệu, trong khi bình thường sẽ được ghi trong file \texttt{settings.py} của Django.
-\\\par
+\par
 Gói \texttt{django-heroku} sẽ tự động cấu hình ứng dụng Django để nó hoạt động trên Heroku. Nó tương thích với các ứng dụng Django 2.0. Để cài đặt, sử dụng lệnh:
 \begin{lstlisting}[language=bash]
 \>pip install django-heroku
