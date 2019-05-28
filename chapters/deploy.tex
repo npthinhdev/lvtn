@@ -1,1 +1,226 @@
 \chapter{Hiện thực}
+Phần này chúng tôi sẽ trình bày quá trình chúng tôi xây dựng và phát triển để tạo thành sản phẩm hoàn chỉnh. Dựa trên nền tảng lý thuyết được giới thiệu ở phần trước, chúng tôi sẽ áp dụng chúng vào những hướng dẫn bên dưới. Ở phần cuối của chương này sẽ là hướng dẫn về cách triển khai ứng dụng lên Internet bằng việc sử dụng máy chủ do trang \url{https://heroku.com} cung cấp.
+\par
+Lưu ý, trong bài báo cáo này chúng tôi đang sử dụng môi trường lập trình là Windows nên có thể có những câu lệnh sẽ khác với MacOS, Linux hay những môi trường lập trình khác.
+\section{Khởi tạo project}
+\subsection{Tạo thư mục và thiết lập môi trường}
+Chúng tôi quyết định đặt tên dự án của mình là \textbf{\texttt{check-seo}}, do đó chúng tôi sẽ tạo thư mục mới để lưu trữ code.
+\par
+Để tạo mới thư mục, bạn có thể click chuột phải $\rightarrow$ chọn New $\rightarrow$ chọn Folder $\rightarrow$ đặt tên \textbf{\texttt{check-seo}}.
+\par
+Ở đây, chúng tôi sẽ tạo thư mục bằng command line trong Windows PowerShell. Để mở PowerShell tại thư mục hiện tại, bấm giữ phím \textbf{\texttt{Shift}} $\rightarrow$ click chuột phải chọn Open PowerShell window here $\rightarrow$ nhập lệnh sau để tạo thư mục mới:
+\begin{lstlisting}[language=bash]
+\>mkdir check-seo
+\end{lstlisting}
+\par
+Di chuyển khung làm việc vào thư mục project vừa tạo.
+\begin{lstlisting}[language=bash]
+\>cd check-seo
+\end{lstlisting}
+\par
+Tại đây, chúng tôi sẽ tiến hành cài đặt môi trường để lập trình cho ứng dụng Python của mình. Đảm bảo là bạn đã cài đặt xong Python theo hướng dẫn ở phần \textbf{\textit{Nền tảng lý thuyết}}, để tránh dài dòng, chúng tôi sẽ hạn chế nhắc lại những kiến thức đã được trình bày ở phần trước.
+\par
+Tại khung cửa sổ của PowerShell, nhập lệnh sau để cài đặt môi trường:
+\begin{lstlisting}[language=bash]
+\>python -m venv ./venv
+\end{lstlisting}
+\par
+Thư mục mới được tạo ra có tên là \textbf{\texttt{venv}} chứa các tập tin hệ thống giúp tạo môi trường ảo cho Python. Để kích hoạt môi trường ảo, sử dụng câu lệnh:
+\begin{lstlisting}[language=bash]
+\>.\venv\Scripts\activate
+\end{lstlisting}
+\par
+Khi kích hoạt môi trường thành công, sẽ có phần thông tin \textbf{\texttt{(venv)}} hiển thị ở đầu mỗi dòng lệnh, giống như \textbf{\texttt{(venv)\textbackslash>}}
+\subsection{Cài đặt các thư viện cần thiết}
+Sau khi tạo xong thư mục và kích hoạt xong môi trường ảo, tiếp theo chúng tôi sẽ tiến hành cài đặt các thư viện phục vụ cho dự án của chúng tôi.
+\par
+Trong thư mục \textbf{\texttt{check-seo}}, tạo tệp mới có tên là \textbf{\texttt{requirements.txt}} sẽ chứa thông tin về thư viện và phiên bản sử dụng, để xem thông tin cụ thể của từng thư viện, bạn có thể tìm kiếm chúng trên kho lưu trữ công khai của Python là \url{https://pypi.org}. Nội dung của file \textbf{\texttt{requirements.txt}} như sau:
+\begin{lstlisting}
+Django==2.2
+lxml==4.3.3
+requests==2.21.0
+\end{lstlisting}
+\par
+Để tiến hành cài đặt thư viện được liệt kê trong file \textbf{\texttt{requirements.txt}}, sử dụng câu lệnh:
+\begin{lstlisting}[language=bash]
+(venv)\>pip install -r requirements.txt
+\end{lstlisting}
+\par
+Trình cài đặt thư viện Python sẽ tiến hành tải về và cài đặt trong môi trường ảo mà chúng tôi đã kích hoạt. Ngoài thư viện chính, trình cài đặt còn tải thêm những thư viện khác bổ trợ đi theo từng thư viện. Để kiểm tra các gói đã cài đặt, sử dụng lệnh:
+\begin{lstlisting}[language=bash]
+(venv)\>pip freeze list
+\end{lstlisting}
+\par
+Kết quả trả về có thể như sau:
+\begin{lstlisting}
+certifi==2019.3.9
+chardet==3.0.4
+Django==2.2
+idna==2.8
+lxml==4.3.3
+pytz==2019.1
+requests==2.21.0
+sqlparse==0.3.0
+urllib3==1.24.3
+\end{lstlisting}
+\subsection{Tạo project và xây dựng app Django}
+Sau khi cài đặt xong những thư viện cần thiết, tiếp theo, chúng ta sẽ tiến hành tạo mới project Django có tên là \textbf{\texttt{src}} trong thư mục \textbf{\texttt{check-seo}} bằng câu lệnh:
+\begin{lstlisting}[language=bash]
+(venv)\>django-admin startproject src .
+\end{lstlisting}
+\par
+Sau khi thực thi thành công câu lệnh trên thì sẽ tạo ra thư mục \textbf{\texttt{src}} chứa các file cài đặt cho project và file \textbf{\texttt{manage.py}} giúp quản lý các thao tác command line cho ứng dụng.
+\par
+Theo thiết kế của ứng dụng, chúng tôi sẽ tạo thêm 2 app cho project là \textbf{\texttt{checkweb}} quản lý chính cho việc thu thập, đánh giá SEO cho website và \textbf{\texttt{tips}} sẽ đảm nhiệm hiển thị các bài đăng về thủ thuật SEO. Để tạo app, sử dụng lần lượt 2 câu lệnh sau đây:
+\begin{lstlisting}[language=bash]
+(venv)\>python .\manage.py startapp checkweb
+(venv)\>python .\manage.py startapp tips
+\end{lstlisting}
+\par
+Để quản lý các file giao diện \textbf{\texttt{html}}, chúng tôi tạo thêm thư mục \textbf{\texttt{templates}} tại thư mục chính của project. Tiếp theo, chúng tôi đi vào thư mục \textbf{\texttt{src}} sau đó tạo thêm thư mục có tên là \textbf{\texttt{static\_venv}} đảm nhiệm việc lưu trữ các file CSS, JavaScript và các thư viện bên ngoài như Bootstrap, jQuery.
+\par
+Sau khi tạo mới app, thư mục \textbf{\texttt{templates}} và \textbf{\texttt{static\_venv}}, cần phải đăng ký vào cấu hình để project hiểu được cấu trúc của chương trình tại file \textbf{\texttt{settings.py}} trong thư mục \textbf{\texttt{src}}.
+\par
+Để khai báo app, tìm đến dòng \textbf{\texttt{INSTALLED\_APPS}} và thêm đoạn code bên dưới vào hàng cuối cùng, kết quả sẽ tương tự như:
+\begin{lstlisting}[language=Python]
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+
+    "checkweb.apps.CheckwebConfig",
+    "tips.apps.TipsConfig",
+]
+\end{lstlisting}
+\par
+Cấu hình templates cho project tại khóa \textbf{\texttt{DIRS}} của mục \textbf{\texttt{TEMPLATES}}:
+\begin{lstlisting}[language=Python]
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+\end{lstlisting}
+\par
+Cuối cùng trong phần này, chúng tôi sẽ cấu hình phần \textbf{\texttt{static}} để hiển thị các file CSS, JavaScript,\ldots tại mục \textbf{\texttt{STATIC\_URL}}, chúng tôi sẽ thêm đoạn code vào để được kết quả như dưới đây:
+\begin{lstlisting}[language=Python]
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "src/static_venv")]
+\end{lstlisting}
+\section{Cấu trúc giao diện Templates}
+\subsection{Xử lý Frontend}
+Phần này, chúng tôi sẽ trình bày về cách chúng tôi phân chia các file giao diện \textbf{\texttt{html}} trong thư mục \textbf{\texttt{templates}} được tạo ở hướng dẫn bên trên.
+\par
+Đầu tiên, chúng tôi tạo file \textbf{\texttt{base.html}} có chức năng là khung sườn cho toàn bộ giao diện với khả năng kết nạp các file khác để giúp chia nhỏ giao diện thành các phần có chức năng riêng biệt. Việc chia nhỏ giao diện thành các file thành phần giúp chúng tôi có thể quản lý code tốt hơn và tránh rối rắm khi nếu lưu quá nhiều dòng code trong một file duy nhất.
+\par
+Tiếp theo, chúng tôi tạo thêm hai file nữa có tên là \textbf{\texttt{header.html}} và \textbf{\texttt{footer.html}}. Quay lại file \textbf{\texttt{base.html}}, ta có cấu trúc code đơn giản như sau:
+\begin{lstlisting}[language=html]
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <!-- Header -->
+    {% include "header.html" %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <!-- Footer -->
+    {% include "footer.html" %}
+    {% block script %}{% endblock %}
+</body>
+</html>
+\end{lstlisting}
+\par
+Để có thể thay đổi nội dung theo từng giao diện, chúng tôi đã sử dụng ba block là \textbf{\texttt{title}}, \textbf{\texttt{content}} và \textbf{\texttt{script}}, do đó chúng tôi sẽ thay đổi nội dung ở hai block này tùy theo mục đích mà chúng tôi muốn hướng đến.
+\par
+Ở file \textbf{\texttt{header.html}} và tương tự là file \textbf{\texttt{footer.html}} sẽ có nội dung cơ bản như sau:
+\begin{lstlisting}[language=html]
+<header>
+    <nav>
+        <a href="/"><h1>Danh Gia Web</h1></a>
+    </nav>
+</header>
+\end{lstlisting}
+\begin{lstlisting}[language=html]
+<footer>
+    <div>DGW &copy; 2018 - {% now "Y" %}</div>
+</footer>
+\end{lstlisting}
+\par
+Sau khi cấu trúc xong bộ khung cho giao diện, tiếp theo chúng tôi sẽ xây dựng giao diện cho từng app dựa trên những gì đã thiết lập.
+\par
+Tại thư mục \textbf{\texttt{templates}} tạo thêm hai thư mục mới có tên trùng với hai app đã tạo là \textbf{\texttt{checkweb}} và \textbf{\texttt{tips}}. Chúng tôi sẽ đi sâu vào việc tạo giao diện cụ thể cho phần app \textbf{\texttt{checkweb}} vì tại đây là trọng tâm chính của ứng dụng đánh giá website của chúng tôi. Phần giao diện \textbf{\texttt{tips}} có phần đơn giản hơn nhiều và bạn có thể thiết lập dựa theo hướng dẫn ở phần \textbf{\texttt{checkweb}}. Hơn nữa, chúng tôi sẽ cung cấp mã nguồn ở phần \textbf{\textit{Kết luận}}, do đó bạn có thể tự nghiên cứu dựa theo những đoạn code của chúng tôi.
+\par
+Mở thư mục \textbf{\texttt{checkweb}} vừa tạo, dựa theo kiến trúc ở phần \textbf{\textit{Thiết kế giải pháp}}, chúng tôi tiến hành tạo thêm các file mới là \textbf{\texttt{index.html}}, \textbf{\texttt{about.html}}, \textbf{\texttt{contact.html}} và \textbf{\texttt{check.html}}.
+\par
+\textbf{\texttt{index.html}}
+\begin{lstlisting}[language=html]
+{% extends "base.html" %}
+{% block title %}Trang Chu{% endblock %}
+{% block content %}
+<div>Noi dung Trang chu</div>
+{% endblock %}
+\end{lstlisting}
+\par
+Các file còn lại cũng có cấu trúc tương tự, với nội dung ở các block sẽ khác nhau tùy theo mỗi file. Ở đây chúng ta quan tâm đến hai file đó là \textbf{\texttt{index.html}} và \textbf{\texttt{check.html}} sẽ được nhắc đến ở những phần sau.
+\subsection{Xử lý Backend}
+Sau khi tạo xong các file \textbf{\texttt{html}}, tiếp theo chúng tôi sẽ tiến hành cấu hình để xử lý phần backend của ứng dụng.
+\par
+Đầu tiên, chúng tôi sẽ quản lý các url để hiển thị file giao diện trong ứng dụng tại file \textbf{\texttt{urls.py}} trong thư mục \textbf{\texttt{src}}. File \textbf{\texttt{urls.py}} sẽ có nội dung như sau:
+\begin{lstlisting}[language=Python]
+from django.urls import path, include
+
+urlpatterns = [
+    path("", include("checkweb.urls")),
+    path("thu-thuat/", include("tips.urls")),
+]
+\end{lstlisting}
+\par
+Tiếp theo, chúng tôi thực hiện việc kết nối giữa truy vấn url và giao diện tại file \textbf{\texttt{views.py}} trong thư mục app \textbf{\texttt{checkweb}} được tạo ra khi chạy lệnh \textbf{\texttt{startapp}} lúc đầu. Django hỗ trợ việc kết nối này đơn giản và tiết kiệm dòng code hơn nhiều bằng chế độ \textbf{\textit{Class-based views}}. Chúng tôi sẽ sử dụng để tạo giao diện cho trang chủ, giới thiệu, liên hệ và trang kiểm tra.
+\begin{lstlisting}[language=Python]
+from django.views.generic import TemplateView
+
+class IndexView(TemplateView):
+    template_name = "checkweb/index.html"
+
+class AboutView(TemplateView):
+    template_name = "checkweb/about.html"
+
+class ContactView(TemplateView):
+    template_name = "checkweb/contact.html"
+
+class CheckView(TemplateView):
+    template_name = "checkweb/check.html"
+\end{lstlisting}
+\par
+Trong thư mục \textbf{\texttt{checkweb}} hiện tại, tạo file \textbf{\texttt{urls.py}} để quản lý các url trong ứng dụng được gọi từ hàm \textbf{\texttt{include}} ở file \textbf{\texttt{urls.py}} trong thư mục \textbf{\texttt{src}}.
+\begin{lstlisting}[language=Python]
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.IndexView.as_view(), name="index"),
+    path("gioi-thieu/", views.AboutView.as_view(), name="about"),
+    path("lien-he/", views.ContactView.as_view(), name="contact"),
+    path("kiem-tra/", views.CheckView.as_view(), name="check"),
+]
+\end{lstlisting}
+\par
+Với cách tương tự, chúng tôi sẽ tiến hành cấu hình đối với app \textbf{\texttt{tips}}. Chi tiết, bạn có thể xem trên mã nguồn của chúng tôi.
+\section{Hiện thực chức năng đánh giá website}
