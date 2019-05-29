@@ -398,3 +398,94 @@ Cuối cùng, chúng tôi trả về kết quả của biến \textbf{\texttt{va
 return value
 \end{lstlisting}
 \par
+Tiếp theo, chúng tôi sẽ xử lý dữ liệu của \textbf{\texttt{value}} ở file \textbf{\texttt{views.py}}. Đoạn code bên dưới bao gồm luôn phần xử lý xác thực reCaptcha được chúng tôi trình bày ở phần trước.
+\begin{lstlisting}[language=Python]
+def post(self, request):
+    url = request.POST["url"]
+    if reCaptcha(request.POST["g-recaptcha-response"], request.META["REMOTE_ADDR"]):
+        context = parsing(url)
+        if context:
+            context["url"] = url
+            return render(request, "checkweb/check.html", context)
+        return redirect("/")
+    return redirect("/")
+\end{lstlisting}
+\par
+Biến \textbf{\texttt{context}} sẽ nhận kết quả trả về từ hàm \textbf{parsing}. Nếu không có giá trị, nghĩa là việc kiểm tra url gặp lỗi, do đó chúng tôi thay vì trả về truy vấn đến trang giao diện \textbf{\texttt{check.html}}, mà sẽ chuyển hướng trở về trang chủ.
+\subsection{Xử lý nâng cao các cấu trúc trong website}
+\subsubsection{Favicon}
+Vấn đề xảy ra ở đây là do định dạng cấu trúc đường dẫn đến hình ảnh của các website khác nhau có phần khác biệt, và do \textbf{\texttt{xpath}} chỉ lấy nội dung bên trong thẻ nên chúng tôi cần phải định dạng lại cấu trúc đường dẫn này. Ví dụ, liên kết hình ảnh bắt đầu bằng \textbf{\texttt{`/'}}, để hiển thị đúng thì cần phải gắn thêm phần tên miền vào trước liên kết. Sau đây là hàm xử lý trong file \textbf{\texttt{functions.py}}
+\begin{lstlisting}[language=Python]
+def getLinkImg(elm, urlDomain):
+    if elm and elm[:2] not in {"ht", "//"}:
+        elm = urlDomain + "/" + elm.lstrip("/")
+    return elm
+\end{lstlisting}
+\par
+Chúng ta sẽ gán lại khóa này trong biến \textbf{\texttt{value}}:
+\begin{lstlisting}[language=Python]
+value["favicon"] = getLinkImg(value["favicon"], urlDomain)
+\end{lstlisting}
+\subsubsection{Thẻ H1, H2}
+Trong quá trình phát triển, chúng tôi nhận thấy nội dung của các thẻ này thường xuyên bị thừa các ký tự khoảng trắng ở đầu hoặc cuối dòng. Đôi khi có vài thẻ có nội dung rỗng. Nguyên nhân là vì bên trong các thẻ này còn được lồng thêm các thẻ khác như thẻ \textbf{\texttt{a}}, \textbf{\texttt{span}}. Do đó chúng tôi cần viết thêm hàm để dọn sạch các khoảng trống bị dư thừa, cũng như các thẻ không chứa nội dung.
+\begin{lstlisting}[language=Python]
+def cleanElms(elms):
+    if elms:
+        for idx, _ in enumerate(elms):
+            elms[idx] = elms[idx].strip()
+        elms = list(filter(None, elms))
+    return elms
+\end{lstlisting}
+\par
+Sau đó, chúng tôi gán lại dữ liệu cho các thẻ này trong hàm \textbf{\texttt{parsing}}:
+\begin{lstlisting}[language=Python]
+value["h1Tags"] = cleanElms(value["h1Tags"])
+value["h2Tags"] = cleanElms(value["h2Tags"])
+\end{lstlisting}
+\subsubsection{Robots.txt}
+Mặc định, nếu trang web sử dụng file này thì sẽ có cấu trúc đường dẫn là \url{https://ten-mien/robots.txt}. Do đó, chúng tôi sẽ sử dụng thư viện \textbf{\texttt{requests}} để truy vấn đến liên kết này và kiểm tra xem mã trạng thái trả về có phải là \textbf{\texttt{200}} không, cũng như có kiểu nội dung là \textbf{\texttt{plain}}.
+\begin{lstlisting}[language=Python]
+def getlinkRobots(urlDomain):
+    try:
+        value = requests.get(urlDomain + "/robots.txt")
+    except BaseException:
+        return None
+    if value.status_code != 200 or "plain" not in value.headers["Content-Type"]:
+        return None
+    return urlDomain + "/robots.txt"
+\end{lstlisting}
+\par
+Đây là yếu tố mới không có trong biến \textbf{\texttt{value}} khi xử lý \textbf{\texttt{xpath}}, do đó chúng tôi gán giá trị hàm này vào khóa mới:
+\begin{lstlisting}[language=Python]
+value["robotsTxt"] = getlinkRobots(urlDomain)
+\end{lstlisting}
+\subsubsection{Sitemap.xml}
+Thông thường, cũng tương tự như với \textbf{\texttt{robots.txt}}, đường dẫn của \textbf{\texttt{sitemap.xml}} sẽ là \url{https://ten-mien/sitemap.xml}. Tuy nhiên, ở một số các trang web, liên kết \textbf{\texttt{sitemap.xml}} không giống như mặc định và đường dẫn đó được khai báo trong file \textbf{\texttt{robots.txt}} có nội dung tương tự như:
+\begin{lstlisting}
+Sitemap: https://ten-mien/site-map/sitemap.xml
+\end{lstlisting}
+\par
+Do đó, để kiểm tra đường dẫn \textbf{\texttt{sitemap.xml}} của trang web, chúng tôi sẽ xem xét nội dung trong file \textbf{\texttt{robots.txt}} trước, nếu không tìm thấy, chúng tôi sẽ tiếp tục kiểm tra với liên kết mặc định. Đối với mỗi liên kết có được, chúng tôi sẽ kiểm tra mã trạng thái trả về có là \textbf{\texttt{200}} hay không, cũng như kiểu nội dung là \textbf{\texttt{xml}}.
+\begin{lstlisting}[language=Python]
+def getlinkSitemap(urlDomain, robots):
+    try:
+        value = requests.get(urlDomain + "/sitemap.xml")
+    except BaseException:
+        return None
+    if robots:
+        txt = requests.get(robots).content.decode("utf-8")
+        txt = txt.replace("\n", "")
+        sitemap = re.findall(r"Sitemap:.*xml", txt)
+        if sitemap:
+            sitemap = sitemap[0].split("Sitemap: ")[1:]
+            return sitemap
+    if value.status_code != 200 or "xml" not in value.headers["Content-Type"]:
+        return None
+    sitemap = [urlDomain + "/sitemap.xml"]
+    return sitemap
+\end{lstlisting}
+\par
+Cũng tương tự yếu tố \textbf{\texttt{robots.txt}}, chúng tôi tiếp tục thêm khóa mới vào biến \textbf{\texttt{value}}:
+\begin{lstlisting}[language=Python]
+value["sitemaps"] = getlinkSitemap(urlDomain, value["robotsTxt"])
+\end{lstlisting}
