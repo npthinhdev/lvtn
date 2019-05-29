@@ -1,5 +1,5 @@
 \chapter{Hiện thực}
-Phần này chúng tôi sẽ trình bày quá trình chúng tôi xây dựng và phát triển để tạo thành sản phẩm hoàn chỉnh. Dựa trên nền tảng lý thuyết được giới thiệu ở phần trước, chúng tôi sẽ áp dụng chúng vào những hướng dẫn bên dưới. Ở phần cuối của chương này sẽ là hướng dẫn về cách triển khai ứng dụng lên Internet bằng việc sử dụng máy chủ do trang \url{https://heroku.com} cung cấp.
+Phần này chúng tôi sẽ trình bày quá trình chúng tôi xây dựng và phát triển để tạo thành sản phẩm hoàn chỉnh. Dựa trên nền tảng lý thuyết được giới thiệu ở phần trước, chúng tôi sẽ áp dụng chúng vào những hướng dẫn bên dưới. Ở phần cuối của chương này sẽ là hướng dẫn về cách triển khai ứng dụng lên Internet bằng việc sử dụng máy chủ do trang Heroku cung cấp.
 \par
 Lưu ý, trong bài báo cáo này chúng tôi đang sử dụng môi trường lập trình là Windows nên có thể có những câu lệnh sẽ khác với MacOS, Linux hay những môi trường lập trình khác.
 \section{Khởi tạo project}
@@ -224,3 +224,177 @@ urlpatterns = [
 \par
 Với cách tương tự, chúng tôi sẽ tiến hành cấu hình đối với app \textbf{\texttt{tips}}. Chi tiết, bạn có thể xem trên mã nguồn của chúng tôi.
 \section{Hiện thực chức năng đánh giá website}
+Sau khi thiết đặt xong phần giao diện templates, tiếp theo chúng tôi sẽ đi sâu vào xây dựng các hàm thực hiện chức năng chính cho project của mình. Đó là công việc nhận vào url trang web mà người dùng muốn đánh giá, kiểm tra captcha và url, sau đó trả về kết quả cho người dùng.
+\par
+Theo cách thông thường, các hàm này được viết trong file \textbf{\texttt{views.py}} ở thư mục app \textbf{\texttt{checkweb}}. Tuy nhiên, để dễ dàng quản lý hơn, chúng tôi sẽ tạo một file mới cùng trong thư mục app và đặt tên là \textbf{\texttt{functions.py}} sẽ chứa những đoạn code phục vụ cho việc phân tích và kiểm tra cho ứng dụng của chúng tôi. Do việc tách ra như vậy, tại file \textbf{\texttt{views.py}} chúng tôi sẽ nhúng file này bằng dòng code sau được thêm vào ở đầu file:
+\begin{lstlisting}[language=Python]
+from . import functions
+\end{lstlisting}
+\par
+\subsection{Tạo form nhập và xử lý xác thực reCaptcha}
+\subsubsection{Tạo giao diện nhập url}
+Trước tiên, chúng tôi sẽ tạo giao diện form nhập để người dùng gửi url muốn kiểm tra vào ứng dụng của chúng tôi. Do đó, chúng tôi sẽ tiến hành thêm thẻ \textbf{\texttt{form}} vào file \textbf{\texttt{index.html}} trong thư mục \textbf{\texttt{templates/checkweb}}.
+\begin{lstlisting}[language=html]
+<form action="{% url `check' %}" method="POST">
+    {% csrf_token %}
+    <input type="url" name="url" id="url" required>
+    <button id="submit">Submit</button>
+</form>
+\end{lstlisting}
+\par
+Form của chúng tôi sẽ sử dụng giao thức \textbf{\texttt{POST}}, được xử lý trong backend và xuất về đường dẫn được khai báo trong \textbf{\texttt{urls.py}} có tên là \textbf{\texttt{check}}, cụ thể ở đây sẽ là file \textbf{\texttt{check.html}}.
+\par
+Sau khi đã tạo xong thẻ \textbf{\texttt{form}}, tiếp đến chúng tôi truy cập vào trang \url{https://www.google.com/recaptcha/admin/} để lấy thông tin về khóa API của reCaptcha. Khóa này được dùng để kích hoạt tính năng của reCaptcha. Theo hướng dẫn trên trang admin, chúng tôi sẽ chèn tiếp thẻ \textbf{\texttt{div}} bên trong thẻ \textbf{\texttt{form}} và bên dưới thẻ \textbf{\texttt{button}}.
+\begin{lstlisting}[language=html]
+<div class="g-recaptcha" data-sitekey="<SITE_KEY>" data-callback="onSubmit" data-badge="bottomleft" data-size="invisible"></div>
+\end{lstlisting}
+\par
+Ngoài ra, để reCaptcha có thể hoạt động được, chúng tôi sẽ chèn thêm đoạn code để xử lý JavaScript. Đoạn code này chúng tôi sẽ đặt trong khối \textbf{\texttt{script}} được kế thừa từ khung \textbf{\texttt{base.html}} mà chúng tôi đã khai báo trước đó.
+\par
+Đoạn JavaScript bên dưới có nhiệm vụ bắt sự kiện click vào nút Summit và tạo ra đoạn mã xác thực reCaptcha mà chúng tôi sẽ xử lý tiếp ở phần tiếp theo:
+\begin{lstlisting}[language=html]
+{% block script %}
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+var sm = document.getElementById("submit");
+sm.onclick = validate;
+
+function validate(event) {
+    event.preventDefault();
+    grecaptcha.execute()
+};
+
+function onSubmit(token) {
+    sm.onclick = null;
+    sm.click();
+}
+</script>
+{% endblock %}
+\end{lstlisting}
+\subsubsection{Hàm xác thực reCaptcha}
+Chúng tôi sẽ viết hàm này trong file \textbf{\texttt{functions.py}} có tên là \textbf{\texttt{reCaptcha}}.
+\begin{itemize}
+    \item Đầu vào sẽ là mã được sinh ra từ việc xác thực của reCaptcha được lưu với tên là \textbf{\texttt{g-recaptcha-response}} từ truy vấn \textbf{\texttt{POST}} và IP của người dùng truy cập.
+    \item Đầu ra là kết quả sau từ đánh giá của reCaptcha sau khi gửi các giá trị đầu vào lên máy chủ. Sẽ có hai giá trị là \textbf{\texttt{true}} và \textbf{\texttt{false}} tương ứng với kết quả xác thực người dùng là thành công hay thất bại.
+\end{itemize}
+\par
+Khi đăng ký reCaptcha, chúng ta còn nhận được ngoài khóa \textbf{\texttt{SITE\_KEY}} thì còn một khóa nữa là \textbf{\texttt{SECRET\_KEY}}. Để có thể dễ dàng kiểm soát các khóa trong ứng dụng, chúng tôi sẽ lưu khóa bí mật này trong file \textbf{\texttt{settings.py}} ở thư mục \textbf{\texttt{src}}.
+\begin{lstlisting}[language=Python]
+# Google reCAPTCHA secret key
+# https://developers.google.com/recaptcha/docs/verify/
+    
+GOOGLE_RECAPTCHA_SECRET_KEY = "<SECRET_KEY>"
+\end{lstlisting}
+\par
+Và để sử dụng biến \textbf{\texttt{GOOGLE\_RECAPTCHA\_SECRET\_KEY}} thì Django có hỗ trợ bằng cách thêm dòng code sau vào đầu file \textbf{\texttt{functions.py}}:
+\begin{lstlisting}[language=Python]
+from django.conf import settings
+\end{lstlisting}
+\par
+Bên cạnh đó, để gửi dữ liệu lên máy chủ của reCaptcha, chúng tôi cần thêm sự hỗ trợ của thư viện Python là \textbf{\texttt{requests}} mà chúng tôi đã cài đặt từ lúc mới thiết lập môi trường của ứng dụng.
+\begin{lstlisting}[language=Python]
+import requests
+\end{lstlisting}
+\par
+Sau khi thêm các thư viện và ý tưởng xử lý thì hàm xử lý reCaptcha sẽ có nội dung như sau:
+\begin{lstlisting}[language=Python]
+data = {
+    "secret": settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+    "response": response,
+    "remoteip": userIP,
+}
+verify = requests.post(
+    "https://www.google.com/recaptcha/api/siteverify", data=data)
+result = verify.json()
+return result["success"]
+\end{lstlisting}
+\par
+Hàm \textbf{\texttt{reCaptcha}} được xây dựng xong thì tiếp theo, chúng tôi sẽ quay lại file \textbf{\texttt{views.py}} để gọi lại hàm này và xử lý nó.
+\par
+Việc xử lý captcha nằm trong class \textbf{\texttt{CheckView}} mà chúng tôi đã tạo trước đó. Theo quy ước trong Django thì để xử lý truy vấn \textbf{\texttt{POST}}, chúng tôi viết thêm hàm \textbf{\texttt{post}} trong class \textbf{\texttt{CheckView}}.
+\begin{lstlisting}[language=Python]
+def post(self, request):
+    url = request.POST["url"]
+    if reCaptcha(request.POST["g-recaptcha-response"], request.META["REMOTE_ADDR"]):
+        # code check web here
+        return render(request, "checkweb/check.html")
+    return redirect("/")
+\end{lstlisting}
+\par
+Nếu kiểm tra captcha thành công thì ứng dụng sẽ trả về trang giao diện trong file \textbf{\texttt{check.html}}. Nếu xác thực thất bại thì sẽ chuyển hướng trở lại trang chủ. Chúng tôi có sử dụng hàm chuyển hướng trang \textbf{\texttt{redirect}}. Thêm vào đầu file \textbf{\texttt{views.py}} đoạn code sau để chèn hàm này:
+\begin{lstlisting}[language=Python]
+from django.shortcuts import redirect
+\end{lstlisting}
+\par
+Đến đây, chúng tôi đã giải quyết xong vấn đề kiểm tra xác thực người dủng bằng reCaptcha.
+\subsection{Phân tích cấu trúc nội dung website}
+\subsubsection{Lấy source code và phân tách trang web}
+Theo cách hoạt động ứng dụng của chúng tôi sẽ phân tích trang web bằng cách lấy source code tương đương với tính năng View source trên các trình duyệt web. Để xử lý chức năng này, chúng tôi xây dựng hàm \textbf{\texttt{parsing}} trong file \textbf{\texttt{functions.py}}.
+\begin{itemize}
+    \item Đầu vào sẽ là url của trang web cần kiểm tra
+    \item Đầu ra là biến có kiểu \textbf{\texttt{dict()}} chứa nội dung các yếu tố mà chúng tôi phân tách ra được từ source code.
+\end{itemize}
+\par
+Ngoài thư viện \textbf{\texttt{requests}}, chúng tôi cần sự trợ giúp thêm của thư viện \textbf{\texttt{lxml}}.
+\begin{lstlisting}[language=Python]
+from lxml import html
+\end{lstlisting}
+\par
+Sau khi thêm vào thư viện cần thiết, bên dưới là đoạn code dùng để lấy source code dựa trên url trang web.
+\begin{lstlisting}[language=Python]
+def parsing(url):
+    try:
+        page = requests.get(url, timeout=5)
+        content = html.fromstring(page.content.decode("utf-8"))
+    except BaseException:
+        return False
+\end{lstlisting}
+\par
+Vì để tránh chương trình bị lỗi khi người dùng nhập vào url mà chúng tôi không thể kiểm tra được nên chúng tôi đã sử dụng cấu trúc \textbf{\texttt{try/except}} trong Python để giải quyết vấn đề này. Ngoài ra, nếu truy vấn vượt quá năm giây cũng sẽ bị xem là lỗi không kiểm tra được. Cuối cùng, biến \textbf{\texttt{content}} được decode theo chuẩn mã \textbf{\texttt{utf-8}} để hiển thị font chữ không bị lỗi.
+\par
+Tiếp theo, cũng trong hàm \textbf{\texttt{parsing}}, chúng tôi khai báo biến \textbf{\texttt{value}} có kiểu là \textbf{\texttt{dict()}} để lưu các yếu tố được phân tách. Bên cạnh đó là các biến dùng để phục vụ làm input cho các hàm về sau.
+\begin{lstlisting}[language=Python]
+value = dict()
+domain = url.split("/")[2]
+urlDomain = url.split("/")[0] + "//" + domain    
+\end{lstlisting}
+\par
+Việc phân tách cấu trúc trong source code, chúng tôi sử dụng phương pháp \textbf{\texttt{xpath}}. Để dễ dàng quản lý, chúng tôi chia ra hai loại là thành phần chỉ có một giá trị, ví dụ thẻ \textbf{\texttt{title}} sẽ được lưu cấu trúc \textbf{\texttt{xpath}} trong biến \textbf{\texttt{elm}}, những thành phần có hơn một giá trị, ví dụ thẻ \textbf{\texttt{img}} sẽ được lưu cấu trúc \textbf{\texttt{xpath}} trong biến \textbf{\texttt{elms}}. Cả hai biến \textbf{\texttt{elm}} và \textbf{\texttt{elms}} đều cò kiểu là \textbf{\texttt{dict()}}.
+\begin{lstlisting}[language=Python]
+elm = {
+    "title": "//title/text()",
+    "description": "//meta[@name=`description']/@content",
+    "favicon": "//link[contains(@rel, `icon')]/@href",
+    "robotsMeta": "//meta[@name=`robots']/@content",
+}
+elms = {
+    "h1Tags": "//h1//text()",
+    "h2Tags": "//h2//text()",
+    "aTags": "//a/@href",
+    "cssInlines": "//@style/..",
+    "imgTags": "//img",
+}
+\end{lstlisting}
+\par
+Sau khi đã có cấu trúc \textbf{\texttt{xpath}} của từng thuộc tính, tiếp theo chúng tôi sẽ sử dụng vòng lặp \textbf{\texttt{for}} để lấy dữ liệu dựa trên cấu trúc có sẵn. Do có hai cấu trúc khác khau, nên chúng tôi cũng sẽ dùng hai vòng lặp để xử lý.
+\begin{lstlisting}[language=Python]
+for k, v in elm.items():
+    try:
+        value[k] = content.xpath(v)[0]
+    except BaseException:
+        value[k] = None
+
+for k, v in elms.items():
+    try:
+        value[k] = content.xpath(v)
+    except BaseException:
+        value[k] = None
+\end{lstlisting}
+\par
+Sau khi chạy xong hai vòng lặp này thì biến \textbf{\texttt{value}} đã lưu được khá nhiều dữ liệu từ việc phân tách source code dựa trên \textbf{\texttt{xpath}}. Tuy nhiên, có một số yếu tố sẽ không đúng chuẩn do những website khác nhau dẫn đến có nhiều kết quả không như ý. chúng tôi sẽ giải quyết vấn đề này bằng các hàm bổ sung và được chúng tôi đề cập trong những phần tiếp theo.
+\par
+Cuối cùng, chúng tôi trả về kết quả của biến \textbf{\texttt{value}} và chuyển qua file \textbf{\texttt{views.py}} để xử lý dữ liệu trả về.
+\begin{lstlisting}[language=Python]
+return value
+\end{lstlisting}
+\par
