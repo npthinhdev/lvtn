@@ -489,3 +489,329 @@ Cũng tương tự yếu tố \textbf{\texttt{robots.txt}}, chúng tôi tiếp t
 \begin{lstlisting}[language=Python]
 value["sitemaps"] = getlinkSitemap(urlDomain, value["robotsTxt"])
 \end{lstlisting}
+\subsubsection{Lỗi liên kết}
+Đầu tiên, chúng tôi viết hàm dùng để định dạng lại thẻ liên kết lấy được từ \textbf{\texttt{xpath}}. Sau đó lọc ra các liên kết trùng nhau, liên kết \textbf{\texttt{tel}}, \textbf{\texttt{mailto}} và \textbf{\texttt{javascript}} cũng được chúng tôi loại ra trước khi kiểm tra liên kết đó có lỗi hay không.
+\begin{lstlisting}[language=Python]
+def getlinkA(elms, urlDomain):
+    idx = 0
+    while idx < len(elms):
+        elm = elms[idx]
+        if elm in ("#", "/") or elm.split(":")[0] in ("tel", "mailto", "javascript"):
+            elms.pop(idx)
+            idx -= 1
+        elif elm[:2] not in ("ht", "//"):
+            elms[idx] = urlDomain + "/" + elm.lstrip("/")
+        elif elm[:2] == "//":
+            elms[idx] = "https:" + elm
+        idx += 1
+    return set(elms)
+\end{lstlisting}
+\par
+Tiếp theo, chúng tôi viết hàm để truy vấn đến liên kết bằng thư viện \textbf{\texttt{requests}} và để hạn chế thời gian phản hồi, chúng tôi đặt thêm tham số \textbf{\texttt{timeout=5}} để bỏ qua liên kết nếu nó phản hồi sau quá năm giây.
+\begin{lstlisting}[language=Python]
+def checkBrokenLink(elm):
+    try:
+        value = requests.get(elm, timeout=5)
+    except BaseException:
+        return elm
+    if value.status_code != 200:
+        return elm
+    return None
+\end{lstlisting}
+Hàm ở trên chỉ đang xét ở từng liên kết đơn lẻ. Tuy nhiên trong một website có thể có rất nhiều liên kết dẫn đến nếu xét tuần tự từng liên kết thì dẫn đến thời gian chờ sẽ rất lâu. Do đó, chúng tôi đã áp dụng xử lý đồng thời vào quá trình kiểm tra này. Để sử dụng gói hỗ trợ này trong Python, chèn dòng code sau vào đầu file \textbf{\texttt{functions.py}}:
+\begin{lstlisting}[language=Python]
+from concurrent.futures import ThreadPoolExecutor 
+\end{lstlisting}
+\par
+Sau khi chèn xong gói thư viện hỗ trợ, chúng tôi triển khai hàm đồng thời và trả về mảng các liên kết bị lỗi:
+\begin{lstlisting}[language=Python]
+def getBrokenLink(elms):
+    res = list()
+    with ThreadPoolExecutor() as executor:
+        for elm in executor.map(checkBrokenLink, elms):
+            if elm:
+                res.append(elm)
+    return res
+\end{lstlisting}
+\par
+Cuối cùng, chúng tôi thêm các giá trị này vào khóa mới trong biến \textbf{\texttt{value}}
+\begin{lstlisting}[language=Python]
+value["aTags"] = getlinkA(value["aTags"], urlDomain)
+value["aBrokens"] = getBrokenLink(value["aTags"])
+\end{lstlisting}
+\subsubsection{CSS nội tuyến}
+Chúng tôi cần định dạng lại kết quả trả về để nó ngắn gọn hơn nhưng vẫn đảm bảo đầy đủ nội dung mà chúng tôi muốn hiển thị. Bởi vì \textbf{\texttt{xpath}} sẽ trả về kết quả là toàn bộ nội dung của thẻ có CSS nội tuyến, chúng tôi sẽ viết hàm để chỉ trả về phần mở thẻ, nơi chứ nội dung của thuộc tính \textbf{\texttt{style}} và loại bỏ phần nội dung cũng như phần code đóng thẻ.
+\begin{lstlisting}[language=Python]
+def getCSSInlines(elms):
+    for idx, value in enumerate(elms):
+        tmp = html.tostring(value, encoding="utf-8").decode("utf-8")
+        elms[idx] = re.search(r"<.*?>", tmp).group()
+    return elms
+\end{lstlisting}
+\par
+Sau đó, chúng tôi gán lại nội dung lại vào biến \textbf{\texttt{value}}:
+\begin{lstlisting}[language=Python]
+value["cssInlines"] = getCSSInlines(value["cssInlines"])
+\end{lstlisting}
+\subsubsection{Thuộc tính alt}
+Việc xử lý yếu tố này cũng gần tương đương với cách làm trên. Chúng tôi sẽ kiểm tra các thẻ \textbf{\texttt{img}} xem nếu bị thiếu thành phần thuộc tính \textbf{\texttt{alt}} thì sẽ trả về thẻ \textbf{\texttt{img}} đó.
+\begin{lstlisting}[language=Python]
+def checkMissAlts(elms):
+    res = list()
+    for elm in elms:
+        tmp = html.tostring(elm, encoding="utf-8").decode("utf-8")
+        if not re.search(r"alt=(\'|\").+(\'|\")", tmp):
+            res.append(re.search(r"<img.*?>", tmp).group())
+    return res
+\end{lstlisting}
+\subsubsection{Xếp hạng}
+Chúng tôi sử dụng dữ liệu về xếp hạng trang web bằng cách lấy API từng kho dữ liệu mở của \textbf{\texttt{Open PageRank}}. Sau khi đăng ký tài khoản thành công, bạn sẽ nhận được khóa API dùng để truy cập miễn phí lên kho dữ liệu này. Cũng tương tự như khóa khi đăng ký reCaptcha, chúng tôi sẽ lưu khóa này trong file \textbf{\texttt{settings.py}} của ứng dụng:
+\begin{lstlisting}[language=Python]
+# Open PageRank key
+# https://www.domcop.com/openpagerank/
+
+OPEN_PAGERANK_KEY = "<API_KEY>"
+\end{lstlisting}
+\par
+Sau đó, chúng tôi quay trở lại file \textbf{\texttt{functions.py}} để hoàn thiện hàm để lấy thông tin xếp hạng.
+\begin{lstlisting}[language=Python]
+def getPageRank(domain):
+    url = "https://openpagerank.com/api/v1.0/getPageRank?domains[0]=" + domain
+    headers = {
+        "API-OPR": settings.OPEN_PAGERANK_KEY
+    }
+    data = requests.get(url, headers=headers)
+    result = data.json()["response"][0]
+    return result["rank"]
+\end{lstlisting}
+\par
+Cuối cùng là gán giá trị trả về này vào biến \textbf{\texttt{value}}:
+\begin{lstlisting}[language=Python]
+value["pageRank"] = getPageRank(domain)
+\end{lstlisting}
+\par
+Đến đây chúng tôi đã hoàn thành xong giai đoạn lấy nội dung source code từ trang web người dùng muốn kiểm tra, phân tách các nội dung cần đánh giá bằng \textbf{\texttt{xpath}} và định dạng lại những nội dung này bằng các hàm nâng cao bổ sung.
+\subsection{Hiển thị kết quả đánh giá ra giao diện}
+Đây là phần giao diện được xử lý tại file \textbf{\texttt{check.html}} mà chúng tôi đã tạo ở những phần trước. Lần này, chúng tôi sẽ đi sâu vào chi tiết ở file này.
+\par
+Những yếu tố đánh giá chúng tôi sẽ sử dụng thẻ \textbf{\texttt{table}} để hiển thị thông tin. Nội dung này được đặt trong block \textbf{\texttt{content}}:
+\begin{lstlisting}[language=html]
+{% block content %}
+<table id="tbCheck">
+    <thead>
+        <tr>
+            <th scope="col" width="15%">Tieu chi</th>
+            <th scope="col" width="15%">Ket qua</th>
+            <th scope="col" width="70%">Chi tiet</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- code here -->
+    </tbody>
+</table>
+{% endblock %}
+\end{lstlisting}
+\par
+Bảng này chúng tôi sẽ chia thành ba cột lần lượt là:
+\begin{itemize}
+    \item Tiêu chí: các yếu tố chúng tôi đánh giá trong website của bạn.
+    \item Kết quả: hiển thị icon tương ứng từ \textbf{\texttt{Font Awesome}} với ba trạng thái là thành công, thất bại và thông tin.
+    \item Chi tiết: sẽ là nội dung được lấy từ biến \textbf{\texttt{value}} mà chúng tôi xử lý ở phần trước, cùng với phần chú thích của chúng tôi để bạn có thể biết được rõ hơn tiêu chí đánh giá của chúng tôi về nội dung này.
+\end{itemize}
+\par
+Tiếp theo chúng tôi sẽ hiển thị thông tin đánh giá cho từng mục trong phần thân cùa thẻ \textbf{\texttt{tbody}}. Ví dụ, với mục tiêu đề, đoạn code của chúng tôi sẽ có nội dung như sau:
+\begin{lstlisting}[language=html]
+<tbody>
+    <tr>
+        <th scope="row">Tieu de</th>
+        <td>
+            {% if title and title|length < 65 %}
+            <i class="fas fa-check-circle text-success"></i>
+            {% else %}
+            <i class="fas fa-times-circle text-danger"></i>
+            {% endif %}
+            <input type="hidden" class="point" value="5">
+        </td>
+        <td>
+            {% if title %}
+            <div>Do dai tieu de trang cua ban la <b>{{ title|length }}</b> ky tu. Hau hat cac cong cu tim kiem se cat bot tieu de trang thanh 65 ky tu.</div>
+            <small><i class="fas fa-angle-double-right"></i> {{ title }}</small>
+            {% else %}
+            <div>Khong tim thay tieu de tren trang cua ban.</div>
+            <small><i class="fas fa-angle-double-right"></i><em> None</em></small>
+            {% endif %}
+        </td>
+    </tr>
+</tbody>
+\end{lstlisting}
+\par
+Đối với yếu tố đánh giá mà kết quả trả về là mảng danh sách ví dụ như là thẻ \textbf{\texttt{h1}} thì chúng tôi sẽ xử lý như sau:
+\begin{lstlisting}[language=html]
+<tbody>
+    <!-- <tr>...</tr> -->
+    <tr>
+        <th scope="row">The h1</th>
+        <td>
+            {% if h1Tags %}
+            <i class="fas fa-check-circle text-success"></i>
+            {% else %}
+            <i class="fas fa-times-circle text-danger"></i>
+            {% endif %}
+            <input type="hidden" class="point" value="5">
+        </td>
+        <td>
+            {% if h1Tags %}
+            <div>Tim thay <b>{{ h1Tags|length }}</b> the h1 tren trang cua ban.</div>
+            <small>{% for h1Tag in h1Tags %}<i class="fas fa-angle-double-right"></i> {{ h1Tag }}<br>{% endfor %}</small>
+            {% else %}
+            <div>Khong tim thay the h1 tren trang cua ban.</div>
+            <small><i class="fas fa-angle-double-right"></i><em> None</em></small>
+            {% endif %}
+        </td>
+    </tr>
+</tbody>
+\end{lstlisting}
+\par
+Chúng tôi đã giớ thiệu hai hình thức đánh giá cơ bản để hiển thị ra giao diện cho người dùng. Những tiêu chí khác tương tự, bạn có thể tham khảo tại trang mã nguồn mở của chúng tôi.
+\par
+Tiếp đến, chúng tôi sẽ trình bày về cách chúng tôi chấm điểm trang web của bạn dựa trên những kết quả này. Chúng tôi sử dụng thư viện jQuery để đọc các class hiển thị icon ở cột Kết quả. Với class \textbf{\texttt{fa-check-circle}} xuất hiện ở cột Kết quả có nghĩa là yếu tố đó đã vượt qua bài kiểm tra của chúng tôi. Dựa vào vị trí đó, chúng tôi tìm tiếp đến thẻ \textbf{\texttt{input}} nơi chứa trọng số để đánh giá tiêu chí đó được thể hiện ở thuộc tính \textbf{\texttt{value}}.
+\par
+Đoạn code này được chúng tôi đặt trong block \textbf{\texttt{script}} để có thể kế thừa giao diện từ bố cục chung trong file \textbf{\texttt{base.html}}:
+\begin{lstlisting}[language=html]
+{% block script %}
+<script>
+$(document).ready(function() {
+    var total = 0;
+    $("#tbCheck .point").each(function() {
+        total += parseInt($(this)[0].value)
+    });
+    var score = 0;
+    $("#tbCheck .fa-check-circle").each(function() {
+        score += parseInt($(this).parent().children().last()[0].value)
+    });
+    score = Math.round(score / total * 100);
+})
+</script>
+{% endblock %}
+\end{lstlisting}
+\par
+Sau cùng, tạo thẻ \textbf{\texttt{div}} có \textbf{\texttt{id="score"}} để chúng tôi hiển thị kết quả điểm đánh giá sau khi tính toán xong. Để trực quan hơn, chúng tôi sẽ hiển thị thêm màu tương ứng với điểm nhận được.
+\begin{itemize}
+    \item Xanh lá nếu điểm lớn hơn hoặc bằng 80/100.
+    \item Vàng nếu điểm lớn hơn hoặc bằng 50/100.
+    \item Đỏ sẽ trong trường hợp còn lại.
+\end{itemize}
+\begin{lstlisting}[language=html]
+<script>
+$("#score").text("Diem: " + score);
+if (score >= 80) {
+    $("#score").addClass("btn-success")
+} else if (score >= 50) {
+    $("#score").addClass("btn-warning")
+} else {
+    $("#score").addClass("btn-danger")
+}
+</script>
+\end{lstlisting}
+\par
+Đến đây, chúng tôi đã trình bày xong tất cả các quá trình mà chúng tôi từ lúc khởi tạo, cài đặt và xây dựng nên ứng dụng của chúng tôi. Tuy nhiên, ứng dụng vẫn chỉ đang nằm ở \textbf{\texttt{localhost}}, dẫn đến người dùng chưa thể truy cập vào ứng dụng trên môi trường Internet. Để triển khai ứng dụng của mình, chúng tôi sẽ trình bày ở phần tiếp ngay sau.
+\subsection{Triển khai ứng dụng lên Heroku}
+Sau khi tạo tài khoản và cài đặt xong Heroku CLI, chúng tôi sẽ tiến hành các cấu hình để triển khai ứng dụng của mình.
+\par
+Đầu tiên, chúng tôi cấu hình file \textbf{\texttt{Procfile}} để cài đặt nền tảng sử dụng, được đặt tại thư mục gốc \textbf{\texttt{check-seo}}.
+\begin{lstlisting}
+web: gunicorn src.wsgi
+\end{lstlisting}
+\par
+Để chỉ định phiên bản hỗ trợ của Python, chúng tôi tạo thêm file \textbf{\texttt{runtime.txt}} có nội dung là:
+\begin{lstlisting}
+python-3.7.3 
+\end{lstlisting}
+\par
+Tiếp theo chúng tôi cài đặt thêm thư viện \textbf{\texttt{gunicorn}} là môi trường web server cho Django được hướng dẫn bởi Heroku.
+\begin{lstlisting}[language=bash]
+(venv)\>pip install gunicorn
+\end{lstlisting}
+\par
+Heroku cũng khuyến khích cài thêm thư viện Python do họ phát triển dành riêng cho ứng dụng Django để giúp ứng dụng hoạt động tốt trên nền tảng của họ.
+\begin{lstlisting}[language=bash]
+(venv)\>pip install django_heroku
+\end{lstlisting}
+\par
+Sau khi cài đặt, chúng tôi cần chèn thư viện này vào file \textbf{\texttt{settings.py}} trong thư mục \textbf{\texttt{src}}:
+\begin{lstlisting}[language=Python]
+# Configure Django App for Heroku.
+# https://devcenter.heroku.com/articles/django-app-configuration
+    
+import django_heroku
+django_heroku.settings(locals())
+\end{lstlisting}
+\par
+Chúng tôi cũng không quên thêm thông tin của hai gói cài đặt này vào cuối file \textbf{\texttt{requirements.txt}}:
+\begin{lstlisting}
+gunicorn==19.9.0
+django-heroku==0.3.1
+\end{lstlisting}
+\par
+Đến đây, chúng tôi đã hoàn tất cấu hình để triển khai ứng dụng lên Heroku. Việc cần làm tiếp theo là gửi code này lên máy chủ của Heroku với tên app của chúng tôi trên tài khoản là \textbf{\texttt{checkseo}}.
+\par
+Tạo \textbf{\texttt{git}} trong thư mục gốc:
+\begin{lstlisting}[language=bash]
+(venv)\>git init
+(venv)\>heroku git:remote -a checkseo
+\end{lstlisting}
+\par
+Xác nhận và tải code lên Heroku:
+\begin{lstlisting}[language=bash]
+(venv)\>git add .
+(venv)\>git commit -m "upload"
+(venv)\>git push heroku master
+\end{lstlisting}
+\par
+Đợi khoảng vài giây để Heroku khởi động và xây dựng ứng dụng từ mã nguồn từ bạn gửi lên. Ứng dụng của chúng tôi sẽ có đường dẵn mặc định là \url{https://checkseo.herokuapp.com}.
+\section{Sản phẩm hoàn chỉnh}
+Sau khi thực hiện xong các bước trong những hướng dẫn bên trên, chúng tôi đã triển khai thành công ứng dụng của mình. Tuy nhiên, để tránh sự phức tạp trong bài báo cáo này, chúng tôi đã lượt bỏ phần cấu hình các thẻ class cho thư viện Bootstrap, bạn có thể xem chi tiết chúng trong mã nguồn được chia sẻ của chúng tôi.
+\par
+Bên dưới, chúng tôi sẽ đưa ra cho bạn thấy được khi ứng dụng của chúng tôi hoàn chỉnh về giao diện sẽ được hiển thị như thế nào.
+\begin{center}
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=120mm]{images/trang-chu.png}
+        \caption{Trang chủ của ứng dụng}
+    \end{figure}
+\end{center}
+\begin{center}
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=120mm]{images/trang-gioi-thieu.png}
+        \caption{Trang giới thiệu của ứng dụng}
+    \end{figure}
+\end{center}
+\begin{center}
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=120mm]{images/trang-lien-he.png}
+        \caption{Trang liên hệ của ứng dụng}
+    \end{figure}
+\end{center}
+\begin{center}
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=120mm]{images/trang-phan-tich.png}
+        \caption{Trang phân tích của ứng dụng}
+    \end{figure}
+\end{center}
+\begin{center}
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=120mm]{images/trang-thu-thuat.png}
+        \caption{Trang thủ thuật của ứng dụng}
+    \end{figure}
+\end{center}
+\begin{center}
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=120mm]{images/trang-loi-404.png}
+        \caption{Trang lỗi 404 của ứng dụng}
+    \end{figure}
+\end{center}
