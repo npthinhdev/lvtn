@@ -1,26 +1,35 @@
 \chapter{Thiết kế giải pháp}
-\section{Thiết lập môi trường}
-Để ứng dụng được chạy ổn định và tránh ảnh hưởng đến những gói cài đặt mặc định, chúng tôi sẽ tạo một môi trường làm việc riêng cho ứng dụng hoạt động 1 cách độc lập so với hệ thống chung. Để tạo môi trường mới, sử dụng lệnh:
-\begin{lstlisting}[language=bash]
-\>python -m venv ./venv
-\end{lstlisting}
+\section{Phương pháp kiểm tra Black Box}
+Theo định nghĩa\cite{blackbox}, phương pháp black box còn được biết đến là kiểm tra hành vi, là một phương pháp kiểm thử phần mềm trong đó cấu trúc/thiết kế/hiện thực của đối tượng đang được kiểm tra không được biết đến bởi người kiểm tra.
+\begin{center}
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=80mm]{images/black-box.png}
+		\caption{Phương pháp kiểm tra Black Box}
+	\end{figure}
+\end{center}
 \par
-Tạo file \texttt{requirements.txt} để lưu lại các gói cần thiết để cài đặt:
-\begin{lstlisting}[language=bash]
-Django==2.1.4
-lxml==4.2.5
-requests==2.21.0
-gunicorn==19.9.0
-django-heroku==0.3.1
-\end{lstlisting}
+Ứng dụng của chúng tôi sẽ áp dụng phương pháp kiểm tra này để đánh giá SEO cho website mà người dùng nhập vào. Cụ thể, ứng dụng sẽ tìm đến và tải về mã nguồn trang web, sau đó phân tích các thông tin nhận được, so sánh với các tiêu chí mà chúng tôi quy ước sẵn và trả về giao diện hiển thị kết quả cho người dùng.
 \par
-Để kích hoạt sử dụng môi trường vừa tạo và cài đặt các gói cần thiết vào môi trường, sử dụng các lệnh sau:
-\begin{lstlisting}[language=bash]
-\>venv\Scripts\activate
-\>pip install -r requirements.txt
-\end{lstlisting}
+Với thiết kế này, người dùng sẽ không cần phải có kiến thức về lập trình. Ứng dụng của chúng tôi sẽ thay người dùng làm việc đó. Do đó mang lại trải nghiệm thuận tiện cho người dùng.
 \par
-Như vậy, đã thiết lập xong các gói dùng để triển khai ứng dụng của chúng tôi, nếu cần thêm gói mới, chúng tôi sẽ cập nhật vào file \texttt{requirements.txt} và chạy lại lệnh cài đặt.
+Tuy nhiên, với giải pháp này, ứng dụng của chúng tôi sẽ xuất hiện vài khuyết điểm. Do không biết được mã nguồn chính xác của trang web, nên đôi khi trình phân tích mã nguồn của chúng tôi sẽ không ổn định, dẫn đến việc đánh giá sẽ không được chính xác hoàn toàn. Đối với các trang web được sinh ra bằng JavaScript, hiện tại thư viện phân tích mã nguồn của chúng tôi không thể tải về được cú pháp, do đó không thể kiểm tra được những trang web thuộc loại này.
+\par
+Nhìn chung, với việc áp dụng phương pháp kiểm tra trang web theo cơ chế black box sẽ mang đến trải nghiệm thuận tiện cho người dùng ứng dụng của chúng tôi.
+\section{Kịch bản người dùng}
+Chúng tôi xây dựng nên kịch bản của ứng dụng dành cho người dùng dựa trên mô hình MTV (Model - Template - View) của Django. Chúng tôi sử dụng sơ đồ bên dưới để trình bày về mô hình ứng dụng của chúng tôi.
+\begin{center}
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=120mm]{images/kich-ban-nguoi-dung.png}
+		\caption{Kịch bản người dùng}
+	\end{figure}
+\end{center}
+\begin{enumerate}
+	\item Người dùng truy cập vào trang chủ của ứng dụng được lưu ở file \textbf{\texttt{index.html}}, tại đây hiển thị thẻ \textbf{\texttt{input}} để người dùng nhập url website cần kiểm tra.
+	\item Khi người dùng bấm vào nút gửi, form sẽ gửi tín hiệu về \textbf{\texttt{VIEW}} với giao thức \textbf{\texttt{POST}}.
+	\item Tại đây, chúng tôi có hàm để kiểm tra xem người dùng đã xác thực reCaptcha chưa. Nếu đúng, sẽ đi tiếp đến bước kế tiếp. Ngược lại, chúng tôi sẽ chuyển hướng người dùng về lại trang chủ và thông báo lỗi xác thực reCaptcha.
+\end{enumerate}
 \section{Kịch bản người dùng}
 Để tạo giao diện đa nền tảng, tối ưu cho các thiết bị di động, chúng tôi sử dụng Bootstrap để quản lý tính responsive cho trang web. Ngoài ra, chúng tôi còn sử dụng thêm vài icon nữa nên sẽ lựa chọn Font Awesome vào website.
 \subsection{Trang chủ}
