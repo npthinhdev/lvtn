@@ -29,18 +29,34 @@ Chúng tôi xây dựng nên kịch bản của ứng dụng dành cho người 
 	\item Người dùng truy cập vào trang chủ của ứng dụng được lưu ở file \textbf{\texttt{index.html}}, tại đây hiển thị thẻ \textbf{\texttt{input}} để người dùng nhập url website cần kiểm tra.
 	\item Khi người dùng bấm vào nút gửi, form sẽ gửi tín hiệu về \textbf{\texttt{VIEW}} với giao thức \textbf{\texttt{POST}}.
 	\item Tại đây, chúng tôi có hàm để kiểm tra xem người dùng đã xác thực reCaptcha chưa. Nếu đúng, sẽ đi tiếp đến bước kế tiếp. Ngược lại, chúng tôi sẽ chuyển hướng người dùng về lại trang chủ và thông báo lỗi xác thực reCaptcha.
+	\item Khi việc kiểm tra reCaptcha thành công, chúng tôi sẽ tiến hành truy vấn đến liên kết mà người dùng nhập vào, sau đó lấy nội dung source code bằng cách sữ dụng thư viện \textbf{\texttt{requests}}. Tuy nhiên, sẽ có trường hợp liên kết url của người dùng nhập vào bị sai, hoặc vì một lý do nào đó mà thư viện của chúng tôi không thể lấy source code được. Do đó, chúng tôi sử dụng cấu trúc \textbf{\texttt{try/except}} và trả về \textbf{\texttt{false}} nếu liên kết gặp lỗi.
+	\item Tại đây, sau khi đã lấy được nội dung source code của trang web, chúng tôi cần định dạng lại bằng thư viện \textbf{\texttt{lxml}} để có thể thực hiện các toán tử \textbf{\texttt{xpath}} phân tích các thành phần trang web từ source code. Chúng tôi khai báo biến \textbf{\texttt{value}} với kiểu dữ liệu là \textbf{\texttt{dict()}} để lưu trữ kết quả sau khi phân tích, với mỗi tiêu chí đánh giá tương ứng với mỗi khóa riêng biệt trong biến \textbf{\texttt{value}}. Sau hàm xử lý này, biến \textbf{\texttt{value}} được trả về để tiếp tục quá trình triển khai trong ứng dụng.
+	\item Sau khi nhận được dữ liệu về các yếu tố cần đánh giá, tiếp theo ứng dụng của chúng tôi sẽ truyền những giá trị này sang phía giao diện. Cụ thể, phần giao diện đảm nhiệm xử lý những dữ liệu này nằm ở file \textbf{\texttt{check.html}}.
+	\item Với từng giá trị nhận được, chúng tôi sử dụng các thẻ hỗ trợ của Django để tiến hành so sánh với những tiêu chí về đánh giá web. Sau cùng, dựa trên những kết quả so sánh, chúng tôi sẽ sử dụng JavaScript để tính toán điểm số cho trang web dựa trên trọng số và hiển thị lên giao diện người dùng.
 \end{enumerate}
-\section{Kịch bản người dùng}
-Để tạo giao diện đa nền tảng, tối ưu cho các thiết bị di động, chúng tôi sử dụng Bootstrap để quản lý tính responsive cho trang web. Ngoài ra, chúng tôi còn sử dụng thêm vài icon nữa nên sẽ lựa chọn Font Awesome vào website.
-\subsection{Trang chủ}
-Chúng tôi hiển thị 1 form để người dùng nhập vào URL cần kiểm tra.
+\section{Giao diện người dùng}
+Chúng tôi sử dụng tính kế thừa giao diện trong Django để thiết kế nên mô hình cho ứng dụng của mình. Ngoài ra, để tạo giao diện đa nền tảng, tối ưu với các thiết bị di động, chúng tôi sử dụng Bootstrap để quản lý tính responsive cho trang web. Bên cạnh đó, chúng tôi sử dụng Font Awesome để hiển thị icon trong trang web.
 \par
-Để tránh kẻ xấu lợi dụng website chúng tôi để liên tục spam request đến các trang web khác. Chúng tôi sử dụng phương thức POST cho form và sử dụng thêm reCAPTCHA nhằm xác thực người dùng.
-\subsection{Trang kiểm tra}
-Trang này chúng tôi dùng để hiện thị thông tin được phân tích từ website của người dùng nhập vào. Kết quả sẽ được hiển thị bằng thẻ \texttt{<table>} gồm các cột:
+Trong dụ án của chúng tôi, sẽ có hai phần ứng dụng con.
 \begin{itemize}
-	\item Thành phần: Hiển thị các mục mà chúng tôi xem xét trang web người dùng, như là tiêu đề, mô tả và các thẻ khác.
-	\item Trạng thái: Sử dụng icon từ Font Awesome để cho người dùng biết tiêu chí đó có đạt yêu cầu hay không. Nếu đạt yêu cầu thì sẽ hiển thị icon có dấu tích xanh lá, ngược lại trang web hiển thị dấu x đỏ kèm theo giải thích và hướng dẫn để người dùng khắc phục lỗi đó.
+	\item Checkweb: đây là ứng dụng trọng tâm cho dự án của chúng tôi, nơi chúng tôi xây dựng các hàm kiểm tra và đánh giá SEO cho trang web người dùng cần kiểm tra.
+	\item Tips: sẽ là nơi chúng tôi đăng những bài viết về các tiêu chuẩn SEO, ứng dụng này chủ yếu là nhận truy vấn của người dùng và hiển thị giao diện web.
+\end{itemize}
+\subsubsection{base.html}
+Đây là bộ khung cho ứng dụng, được chia thành ba khối cơ bản là \textbf{\texttt{title}} chứa tiêu đề, \textbf{\texttt{content}} chứa nội dung, \textbf{\texttt{script}} chứa các mã JavaScript.
+\subsubsection{header.html, footer.html}
+Hai file giao diện này có nội dung là hiển thị thanh menu ở đầu trang web và thông tin về dự án ở cuối trang. Thay vì được viết trực tiếp trong file \textbf{\texttt{base.html}}, chúng tôi chia nhỏ từng phần ra để code của chúng tôi được cấu trúc rõ ràng hơn. Sau cùng, chúng được \textbf{\texttt{include}} lại vào file \textbf{\texttt{base.html}} tại vị trí tương ứng cần hiển thị.
+\subsubsection{index.html}
+File này đóng vai trò là trang chủ trong ứng dụng. Chúng tôi hiển thị một form để người dùng nhập vào URL cần kiểm tra.
+\par
+Để bảo vệ website chúng tôi tránh liên tục spam truy vấn đến các trang web khác. Chúng tôi sử dụng phương thức POST cho form và sử dụng thêm reCAPTCHA nhằm xác thực người dùng.
+\subsubsection{about.html, contact.html}
+Hiển thị phần giới thiệu về ứng dụng của chúng tôi đến người dùng và thông tin liên hệ.
+\subsubsection{check.html}
+Trang này chúng tôi dùng để hiện thị thông tin được phân tích từ website của người dùng nhập vào. Kết quả sẽ được hiển thị bằng thẻ \textbf{\texttt{table}} gồm các cột:
+\begin{itemize}
+	\item Tiêu chí: Hiển thị các mục mà chúng tôi xem xét trang web người dùng, như là tiêu đề, mô tả và các thẻ khác.
+	\item Kết quả: Sử dụng icon từ Font Awesome để cho người dùng biết tiêu chí đó có đạt yêu cầu hay không. Nếu đạt yêu cầu thì sẽ hiển thị icon có dấu tích xanh lá, ngược lại trang web hiển thị dấu x đỏ.
 	\item Chi tiết: Mục này chúng tôi dùng để liệt kê ra nội dung được lấy từ trang web của người dùng, ví dụ như nội dung của thẻ tiêu đề, mô tả, hình ảnh\ldots
 \end{itemize}
 \par
@@ -52,99 +68,3 @@ Ngoài ra, chúng tôi sử dụng đoạn JavaScript để tính toán điểm 
 \end{itemize}
 \par
 Nút Trở lại được đặt ở cuối bảng cho phép người dùng quay lại trang chủ để có thể kiểm tra trang web khác.
-\subsection{Trang thông tin}
-Đây là nhóm các trang web chúng tôi dùng để hiển thị đến người dùng các trang như Liên hệ, Giới thiệu.
-\par
-Những thủ thuật và tiêu chuẩn đánh giá của chúng tôi cũng sẽ được thêm vào nhóm này.
-\section{Xử lý Backend}
-Các file chúng tôi nhắc đến bên dưới nếu không có giải thích gì thêm sẽ mặc nhiên nằm trong thư mục \texttt{checkweb} mà chúng tôi đã tạo ở những phần trước.
-\par
-Để có thể dễ dàng quản lý các phần lập trình khi thêm vào, chúng tôi tạo thêm file \texttt{functions.py}. Tạo file \texttt{urls.py} để khai báo và quản lý các URL cho ứng dụng.
-\par
-Khi người dùng click vào nút submit trên trình duyệt, dữ liệu sẽ được truyền tới file \texttt{views.py} để xử lý, tại đây chúng tôi gọi đến hàm kiểm tra tính xác thực của CAPTCHA trong file \texttt{functions.py}.
-\par
-\texttt{views.py}
-\begin{lstlisting}[language=Python]
-from .functions import reCaptcha
-
-class CheckView(TemplateView):
-	def post(self, request):
-		if reCaptcha(request):
-			pass
-			# code
-\end{lstlisting}
-\par
-\texttt{functions.py}
-\begin{lstlisting}[language=Python]
-import requests
-from django.conf import settings
-
-def reCaptcha(request):
-	response = request.POST["g-recaptcha-response"]
-	data = {
-		"secret": settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-		"response": response
-	}
-	verify = requests.post("https://www.google.com/recaptcha/api/siteverify", data=data)
-	result = verify.json()
-	return result["success"]
-\end{lstlisting}
-\par
-Nếu người dùng xác thực thành công thì sẽ trả về kết quả là \texttt{True} và tiếp tục thực thi bên trong câu lệnh \texttt{if}. Tiếp theo, chúng tôi gọi hàm \texttt{parsing()} với tham số \texttt{domain} là URL website người dùng nhập vào để phân tách dữ liệu.
-\par
-\texttt{views.py}
-\begin{lstlisting}[language=Python]
-if reCaptcha(request):
-	if(parsing(domain)):
-		pass
-		# code
-\end{lstlisting}
-\par
-\texttt{functions.py}
-\begin{lstlisting}[language=Python]
-from lxml import html
-
-def parsing(domain):
-	try:
-		page = requests.get(domain)
-		content = html.fromstring(page.content.decode("utf-8"))
-	except Exception:
-		return False
-		
-	value = dict()
-	elm = {
-        "title": "//title/text()",
-	}
-	
-	for k,v in elm.items():
-		try:
-			value[k] = content.xpath(v)[0]
-		except Exception:
-			print(k, "not found!")
-			
-	return value
-\end{lstlisting}
-\par
-Đoạn code sẽ lấy ra tiêu đề của trang web và trả về kết quả vào biến \texttt{value}. Chúng tôi quay lại file \texttt{views.py} để lấy giá trị này và hiển thị ra giao diện người dùng.
-\par
-\texttt{views.py}
-\begin{lstlisting}[language=Python]
-if(parsing(domain)):
-	context = parsing(domain)
-	return render(request, "checkweb/check.html", context)
-\end{lstlisting}
-\par
-Do đang sử dụng template do Django cung cấp nên file \texttt{check.html} sẽ được lưu tại \texttt{lvtn\textbackslash templates\textbackslash checkweb\textbackslash check.html}. Chúng ta có thể gọi giá trị ra giao diện bằng biến có tên là key tương ứng của biến \texttt{context}.
-\par
-\texttt{check.html}
-\begin{lstlisting}[language=HTML]
-{% extends "base.html" %}
-
-{% block title %}Checking page{% endblock %}
-{% block content %}
-<!-- get variable -->
-<h2>{{ title }}</h2>
-{% endblock %}
-\end{lstlisting}
-\par
-Tới đây, chúng tôi đã cung cấp những cái nhìn cơ bản cách ứng dụng của chúng tôi hoạt động. Chúng tôi sẽ tiếp tục hoàn thiện báo cáo này trong những lần cập nhật sau.
