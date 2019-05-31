@@ -1,42 +1,132 @@
 \chapter{Các tiêu chuẩn SEO}
-Để thu hút khách hàng truy cập và sử dụng webstie của mình, thì phải cần rất nhiều tiêu chí như giao diện đẹp, đáp ứng nhanh, thuận tiện mang đến trải nghiệm tốt cho người dùng. Tuy nhiên, ứng dụng của chúng tôi không đánh giá về mặt người dùng mà nó được dùng tối ưu để triển khai cho các công cụ tìm kiếm, giúp cho trang web được thứ hạng tốt hơn để người dùng có thể dễ dàng nhìn thấy, còn việc giữ chân khách hàng và sử dụng dịch vụ thì nó không là nhiệm vụ hàng đầu ứng dụng của chúng tôi.
+Để thu hút khách hàng truy cập và sử dụng webstie của mình, thì phải cần rất nhiều tiêu chí như giao diện đẹp, đáp ứng nhanh, thuận tiện mang đến trải nghiệm tốt cho người dùng. Tuy nhiên, ứng dụng của chúng tôi không đánh giá về mặt người dùng mà nó được dùng tối ưu để triển khai cho các công cụ tìm kiếm bằng việc phân tích bố trí các thẻ nội dung trên website, giúp cho trang web được thứ hạng tốt hơn để người dùng có thể dễ dàng nhìn thấy.
 \par
-Sau đây là các tiêu chuẩn cần thiết cho 1 website chuẩn SEO\cite{seo}:
-\section{Tên miền và hosting}
-Khi lựa chọn tên miền và hosting, tốt nhất nên lựa chọn tên liên quan đến nội dung website hoặc liên quan đến ngành nghề của cửa hàng hay doanh nghiệp. Tên miền được sử dụng lâu sẽ được đánh giá cao, bên cạnh đó nên chọn tên miền ngắn gọn, dễ nhớ. Song song với tên miền thì hosting là yếu tố đi kèm quan trọng không thể thiếu, hosting có tốc độ nhanh, hoạt động ổn định với băng thông và dung lượng thích hợp, ít khi bị gián đoạn là một trong những yếu tố giúp website thân thiện hơn với công cụ tìm kiếm.
-\section{Tốc độ tải trang}
-Tốc độ tải trang của một website  là một yếu tố quan trọng trong việc thiết kế một trang web chuẩn SEO, vì vậy việc tối ưu cấu trúc code web giúp việc tải trang nhanh hơn. Thông thường một website được đánh giá cao khi có tốc độ tải trang trung bình từ 0.5 giây đến 2 giây. Một website có tốc độ tải trang chậm có thể sẽ làm cho người dùng cảm thấy khó chịu, đồng thời việc xếp hạng trên bảng công cộng tìm kiếm của Google cũng sẽ gặp khó khăn vì vậy cần phải chú ý vào tốc độ tải của một trang web khi thiết kế.
-\section{URL website}
-Bên cạnh tốc độ tải trang thì việc tối ưu URL website là điều quan trọng không kém, địa chỉ URL cần xuất hiện một cách rõ ràng và thân thiện ngay trên các thanh công cụ tìm kiếm. Khi thiết kế website chuẩn SEO thì phải xây dựng một URL có khả năng tùy biến và thân thiện.
+Sau đây là các tiêu chuẩn cần thiết cho một website chuẩn SEO\cite{seo}:
+\section{Thẻ header}
+Thẻ tiêu đề là một yếu tố HTML được sử dụng để chỉ định các tiêu đề trên trang của bạn. Thẻ tiêu đề chính, được gọi là \textbf{\texttt{h1}}, thường được dành riêng cho tiêu đề của trang. Nó trông như thế này:
+\begin{lstlisting}[language=html]
+<h1>Tieu de trang</h1>
+\end{lstlisting}
 \par
-Một số yếu tố cần thiết khi xây dựng một URL tốt:
+Ngoài ra còn có các tiêu đề phụ đi từ thẻ \textbf{\texttt{h2}} đến \textbf{\texttt{h6}}, mặc dù không cần sử dụng tất cả các tiêu đề này trên một trang. Hệ thống phân cấp của các thẻ tiêu đề đi từ \textbf{\texttt{h1}} đến \textbf{\texttt{h6}} theo thứ tự quan trọng giảm dần.
+\par
+Mỗi trang nên có một \textbf{\texttt{h1}} duy nhất mô tả chủ đề chính của trang, điều này thường được tạo tự động từ tiêu đề của trang. Là tiêu đề mô tả chính của trang, \textbf{\texttt{h1}} nên chứa từ khóa hoặc cụm từ chính của trang đó.
+\par
+Chủ đề chính của trang được giới thiệu trong tiêu đề \textbf{\texttt{h1}} và mỗi tiêu đề bổ sung được sử dụng để giới thiệu một chủ đề phụ mới. Ví dụ, \textbf{\texttt{h2}} cụ thể hơn \textbf{\texttt{h1}} và các thẻ \textbf{\texttt{h3}} cụ thể hơn so với \textbf{\texttt{h2}}.
+\section{Liên kết nội bộ}
+Một phần của trang web có khả năng thu thập dữ liệu nằm trong cấu trúc liên kết nội bộ của nó. Khi bạn liên kết đến các trang khác trên trang web của mình, bạn đảm bảo rằng trình thu thập thông tin của công cụ tìm kiếm có thể tìm thấy tất cả các trang của bạn và giúp khách truy cập điều hướng trang web của bạn.
+\section{Văn bản neo}
+Văn bản neo là văn bản mà bạn liên kết đến các trang. Dưới đây, bạn có thể thấy một ví dụ về những gì một liên kết không có văn bản neo và một liên kết với văn bản neo sẽ trông như thế nào trong HTML.
+\begin{lstlisting}[language=html]
+<a href="http://www.example.com"></a>
+<a href="http://www.example.com" title="Keyword Text">Keyword Text</a>
+\end{lstlisting}
+\par
+Trên chế độ xem trực tiếp, nó sẽ trông như thế này:
+\begin{lstlisting}
+http://www.example.com
+Keyword Text
+\end{lstlisting}
+\par
+Văn bản neo gửi tín hiệu đến các công cụ tìm kiếm liên quan đến nội dung của trang đích. Ví dụ, nếu muốn liên kết đến một trang trên trang web bằng cách sử dụng văn bản neo "Học hỏi SEO", thì đó là một chỉ báo tốt cho các công cụ tìm kiếm rằng trang được nhắm mục tiêu là nơi mọi người có thể tìm hiểu về SEO.
+\section{Khối lượng liên kết}
+Trong Nguyên tắc quản trị trang web chung của Google, họ nói việc giới hạn số lượng liên kết trên một trang ở mức hợp lý (nhiều nhất là vài nghìn). Đây là một phần của hướng dẫn kỹ thuật của Google, thay vì phần hướng dẫn chất lượng, vì vậy có quá nhiều các liên kết nội bộ không phải là điều quá nghiêm trọng, nhưng nó ảnh hưởng đến cách Google tìm và đánh giá các trang của bạn.
+\par
+Vì vậy, bạn chỉ nên liên kết khi bạn muốn nói điều đó. Quá nhiều liên kết không chỉ làm loãng nội dung của mỗi liên kết, mà chúng còn có thể không có ích và quá sức đối với việc Google hiểu trang của bạn.
+\par
+Tập trung vào chất lượng và giúp người dùng điều hướng trang web của bạn sẽ có khả năng bạn đã giành chiến thắng mà không phải lo lắng về quá nhiều về số lượng liên kết.
+\section{Chuyển hướng}
+Xóa và đổi tên trang là một cách phổ biến, nhưng trong trường hợp bạn di chuyển một trang, hãy đảm bảo cập nhật các liên kết đến URL cũ đó. Bạn nên đảm bảo chuyển hướng URL đến vị trí mới của nó, nhưng nếu có thể, hãy cập nhật tất cả các liên kết nội bộ đến URL đó tại nguồn để người dùng và trình thu thập thông tin không phải chuyển hướng đến trang đích. Hãy cẩn thận để tránh các vòng chuyển hướng quá nhiều (theo Google, nên giữ số vòng chuyển hướng không quá 3 và ít hơn 5).
+\par
+Thay vì:
+\begin{lstlisting}
+example.com/location1 -> example.com/location2 -> example.com/location3
+\end{lstlisting}
+\par
+Nên dùng:
+\begin{lstlisting}
+example.com/location1 -> example.com/location3
+\end{lstlisting}
+\section{Tối ưu hình ảnh}
+Hình ảnh là thủ phạm lớn nhất của các trang web chậm. Cách tốt nhất để giải quyết vấn đề này là nén hình ảnh của bạn. Một cách khác để giúp tối ưu hóa hình ảnh của bạn (và cải thiện tốc độ trang) là chọn định dạng hình ảnh phù hợp.
+\par
+Cách chọn định dạng hình ảnh sẽ sử dụng:
 \begin{itemize}
-	\item URL nên mã hóa theo tiêu đề bài viết, có liên quan tới nội dung bài viết, keywords, description.
-	\item Dễ dàng thêm canonical URL cho những trang có nội dung bị trùng lặp nhiều.
-	\item Sử dụng rewrite URL đối với các liên kết và phân tách mỗi từ bằng dấu gạch nối.
-	\item Chỉ có 1 trong 2 có đuôi \texttt{www} hoặc không có \texttt{www} trước URL để tránh bị phạt nội dung trùng lặp.
-	\item Không dùng các loại URL tự động có số bên trong như \url{www.example.com/?p=56789}.
-	\item Có 1 file \texttt{robots.txt} chuẩn để điều khiển các crawler 1 cách hợp lý.
+	\item Nếu hình ảnh của bạn là ảnh động, hãy sử dụng GIF.
+	\item Nếu bạn không cần giữ độ phân giải hình ảnh cao, hãy sử dụng JPEG (và kiểm tra các cài đặt nén khác nhau).
+	\item Nếu bạn cần duy trì độ phân giải hình ảnh cao, hãy sử dụng PNG.
+	\begin{itemize}
+		\item Nếu hình ảnh của bạn có nhiều màu sắc, hãy sử dụng PNG-24.
+		\item Nếu hình ảnh của bạn không có nhiều màu sắc, hãy sử dụng PNG-8.
+	\end{itemize}
 \end{itemize}
-\section{Thẻ tiêu đề và mô tả}
-Thẻ tiêu đề (title) và thẻ mô tả (meta description) được đánh giá là hai thẻ quan trọng nhất đối với một website.
+\section{Thuộc tính alt}
+Văn bản thay thế trong hình ảnh là một nguyên tắc của khả năng truy cập web và được sử dụng để mô tả khi hình ảnh không thể hiển thị. Điều quan trọng là phải có mô tả văn bản thay thế để có thể hiểu những gì hình ảnh trên trang web của bạn mô tả vấn đề gì.
+\par
+Các bot công cụ tìm kiếm cũng thu thập dữ liệu văn bản thay thế để hiểu rõ hơn về hình ảnh của bạn, điều này mang lại cho bạn lợi ích bổ sung trong việc cung cấp bối cảnh hình ảnh tốt hơn cho các công cụ tìm kiếm. Chỉ cần đảm bảo rằng các mô tả alt của bạn đọc tự nhiên cho mọi người và tránh nhồi nhét từ khóa cho các công cụ tìm kiếm.
+\par
+Thay vì:
+\begin{lstlisting}[language=html]
+<img src="grumpycat.gif" alt="grumpy cat, cat is grumpy, grumpy cat gif">
+\end{lstlisting}
+\par
+Nên dùng:
+\begin{lstlisting}[language=html]
+<img src="grumpycat.gif" alt="A black cat looking very grumpy at a big spotted dog">
+\end{lstlisting}
+\section{Định dạng nội dung}
+Trang của bạn có thể chứa nội dung tốt nhất từng được viết về một chủ đề, nhưng nếu nó được định dạng không đúng, khán giả của bạn có thể không bao giờ đọc nó. Một số nguyên tắc có thể thúc đẩy khả năng đọc, bao gồm:
 \begin{itemize}
-	\item Thẻ title cần đảm bảo ngắn gọn, xúc tích, duy nhất và không nên dài quá 65 ký tự.
-	\item Thẻ meta description phải tóm tắt được nội dung chính trên website, hay một bài viết một cách ngắn gọn, đầy đủ thông tin và đặt biệt là không được dài quá 150 ký tự.
+	\item Kích thước và màu sắc: tránh các phông chữ quá nhỏ. Google khuyến nghị sử dụng phông chữ 16px trở lên để tối ưu hóa trên điện thoại di động. Màu văn bản liên quan đến màu nền của trang cũng sẽ thúc đẩy khả năng đọc.
+	\item Tiêu đề: chia nhỏ nội dung của bạn bằng các tiêu đề hữu ích có thể giúp người đọc điều hướng trang. Điều này đặc biệt hữu ích trên các trang dài, nơi người đọc có thể chỉ tìm kiếm thông tin từ một phần cụ thể.
+	\item Ý chính: tuyệt vời cho danh sách, nội dung này có thể giúp người đọc đọc lướt và nhanh chóng tìm thấy thông tin họ cần.
+	\item Phương tiện hỗ trợ: khi thích hợp, bao gồm hình ảnh, video và các tiện ích sẽ bổ sung cho nội dung của bạn.
+	\item In đậm và in nghiêng: việc sử dụng hợp lý các tùy chọn định dạng này có thể gọi ra những điểm quan trọng bạn muốn giao tiếp.
 \end{itemize}
-\section{Sitemap và robots.txt}
-Khi thiết kế website chuẩn SEO không thể bỏ qua sơ đồ trang (sitemap) giúp phân chia cấu trúc website và cấu trúc URL khi duyệt website tốt hơn. Ngoài sitemap, website còn cần có thêm file \texttt{robots.txt} giúp crawler của các bộ máy tìm kiếm có thể thu thập thông tin từ website một cách đầy đủ, nhanh chóng và thuận thiện hơn.
-\section{Thiết bị di động}
-Website thân thiện với thiết bị di động, có thể tương tác và hiển thị nội dung tốt, trên mọi trình duyệt hay các thiết bị là một tiêu chuẩn mới cũng có thể xem đó là điểm cộng với một website chuẩn SEO. Ngày nay, người dùng có xu hướng sử dụng nhiều thiết bị khác nhau để tra cứu thông tin như PC, máy tính bảng hay điện thoại di động, do đó mà việc xây dựng một giao diện phù hợp và thích ứng được với nhiều thiết bị khác nhau là điều mà một website cần có.
-\section{Các yếu tố khác}
-Bên cạnh các yếu tố quan trọng đã được nêu thì còn có một số yếu tố cơ bản cân thiết khác khi xây dựng một website chuẩn SEO.
+\section{Thẻ title}
+Thẻ tiêu đề của trang là một phần tử HTML mô tả, chỉ định tiêu đề của một trang web cụ thể. Chúng được lồng trong thẻ đầu của mỗi trang và trông như thế này:
+\begin{lstlisting}[language=html]
+<head>
+	<title>Example Title</title>
+</head>
+\end{lstlisting}
+\par
+Mỗi trang trên trang web của bạn nên có một thẻ tiêu đề mô tả, độc đáo. Những gì bạn nhập vào trường thẻ tiêu đề sẽ hiển thị ở đây trong kết quả tìm kiếm, mặc dù trong một số trường hợp, Google có thể điều chỉnh cách thẻ tiêu đề của bạn xuất hiện trong kết quả tìm kiếm.
+\par
+Thẻ tiêu đề của bạn có vai trò lớn đối với mọi người, ấn tượng đầu tiên về trang web của bạn và nó là một công cụ cực kỳ hiệu quả để thu hút người tìm kiếm đến trang của bạn hơn bất kỳ kết quả nào khác. Thẻ tiêu đề của bạn càng hấp dẫn, kết hợp với thứ hạng cao trong kết quả tìm kiếm, bạn càng thu hút được nhiều khách truy cập vào trang web của bạn. Điều này nhấn mạnh rằng SEO không chỉ là về công cụ tìm kiếm, mà là toàn bộ trải nghiệm người dùng.
+\par
+Điều gì làm cho một thẻ tiêu đề hiệu quả?
 \begin{itemize}
-	\item Website có giao diện độc đáo, bố cục phù hợp với cấu trúc thuận tiện và logic, chuẩn UX/UI giúp người dùng có thể tìm đến bất kỳ nội dung nào trên website một cách thuận tiện.
-	\item Tối ưu các thẻ H1 đến H6 trên website cùng với thuận tiện trong việc tối ưu thẻ mô tả (thuộc tính alt) của hình ảnh.
-	\item Tối ưu hiển thị cho bài viết, hình ảnh, video và các nội dung khác trên website.
-	\item Nội dung được tải về trực tiếp trong code HTML, không phải thông qua JavaScript, AJAX, iframe\ldots
-	\item Tích hợp thêm các nút chia sẻ mạng xã hội như nút Like Faceook, nút G+1 hay nút Tweet giúp việc chia sẻ nội dung website trên cộng đồng mạng trở nên nhanh chóng và thuận tiện hơn.
-	\item Tối ưu cấu trúc website theo chuẩn W3C (Word Wide Web Consortium) đồng thời thân thiện với trải nghiệm người dùng.
-	\item Đảm bảo tính bảo mật của website, hạn chế tối đa các hoạt động tấn công mạng hay virus tấn công website.
-	\item Tạo trang 404 cho các trang không tìm thấy.
+	\item Từ khóa: có từ khóa mục tiêu của bạn trong tiêu đề có thể giúp cả người dùng và công cụ tìm kiếm hiểu trang của bạn nói về cái gì. Ngoài ra, là mặt tiền của trang web, từ khóa của bạn càng có nhiều khả năng người dùng sẽ đọc chúng (và hy vọng nhấp chuột) và chúng có thể hữu ích hơn để xếp hạng.
+	\item Độ dài: trung bình, các công cụ tìm kiếm hiển thị 50 ký tự 60 đầu tiên ($\approx$ 512px) của thẻ tiêu đề trong kết quả tìm kiếm. Nếu thẻ tiêu đề của bạn vượt quá các ký tự được cho phép, dấu chấm lửng "\ldots" sẽ xuất hiện ở nơi tiêu đề bị cắt.
+	\item Thương hiệu: một đề cập đến tên thương hiệu vì nó thúc đẩy nhận thức về thương hiệu và tạo ra tỷ lệ nhấp cao hơn trong số những người quen thuộc với trang web. Đôi khi, nên đặt thương hiệu của bạn ở đầu thẻ tiêu đề, chẳng hạn như trên trang chủ của bạn, nhưng hãy chú ý đến những gì bạn đang cố xếp hạng và đặt những từ đó gần hơn với đầu thẻ tiêu đề.
 \end{itemize}
+\section{Thẻ meta descriptions}
+Giống như thẻ tiêu đề, thẻ meta mô tả là các thành phần HTML mô tả nội dung của trang mà chúng xuất hiện. Chúng cũng được lồng trong thẻ head và trông như thế này:
+\begin{lstlisting}[language=html]
+<head>
+	<meta name="description" content="Description of page here.">
+</head>
+\end{lstlisting}
+\par
+Điều gì làm cho một mô tả meta hiệu quả?
+\begin{itemize}
+	\item Mức độ liên quan: meta mô tả phải phù hợp với nội dung của trang của bạn, vì nó sẽ tóm tắt khái niệm chính của bạn dưới một số hình thức. Bạn nên cung cấp cho người tìm kiếm đủ thông tin để biết họ đã tìm thấy một trang đủ phù hợp để trả lời câu hỏi của họ, mà không cung cấp quá nhiều thông tin để loại bỏ nhu cầu nhấp qua trang web của bạn.
+	\item Độ dài: công cụ tìm kiếm có xu hướng cắt ngắn mô tả meta thành khoảng 155 ký tự. Nó tốt nhất để viết meta mô tả giữa 150 đến 300 ký tự.
+\end{itemize}
+\section{Định dạng URL}
+Các công cụ tìm kiếm yêu cầu các URL duy nhất cho mỗi trang trên trang web của bạn để họ có thể hiển thị các trang của bạn trong kết quả tìm kiếm, nhưng cấu trúc và đặt tên URL rõ ràng cũng hữu ích cho những người đang cố gắng hiểu URL cụ thể là gì.
+\par
+Thay vì:
+\begin{lstlisting}
+example.com/asdf/453?=recipe-23432-1123
+\end{lstlisting}
+\par
+Nên dùng:
+\begin{lstlisting}
+example.com/desserts/chocolate-pie
+\end{lstlisting}
+\par
+Mặc dù không cần thiết phải có cấu trúc URL, nhiều nghiên cứu về tỷ lệ nhấp cho thấy rằng, khi được lựa chọn giữa một URL và một URL ngắn hơn, người tìm kiếm thường thích các URL ngắn hơn. Giống như thẻ tiêu đề và meta mô tả quá dài, URL quá dài cũng sẽ bị cắt bằng dấu chấm lửng. Giảm thiểu độ dài, cả bằng cách bao gồm ít từ hơn trong tên trang của bạn và xóa các thư mục con không cần thiết, giúp URL của bạn dễ sao chép và dán hơn, cũng như có thể nhấp nhiều hơn.
+\par
+Ngoài ra, Google khuyến nghị rằng tất cả các trang web đều có giao thức bảo mật (phiên bản nâng cấp trong phiên bản https là viết tắt của cụm từ bảo mật). Để đảm bảo rằng các URL của bạn đang sử dụng giao thức \textbf{\texttt{https://}} thay vì \textbf{\texttt{http://}}, bạn phải có chứng chỉ SSL. Kể từ tháng 7 năm 2018, Google Chrome hiển thị "không bảo mật" cho tất cả các trang web HTTP, điều này có thể khiến các trang web này xuất hiện không đáng tin cậy đối với khách truy cập và dẫn đến việc họ rời khỏi trang web.
