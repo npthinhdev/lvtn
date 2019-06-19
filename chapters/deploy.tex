@@ -688,23 +688,21 @@ Tiếp theo chúng tôi sẽ hiển thị thông tin đánh giá cho từng mụ
 \par
 Chúng tôi đã giớ thiệu hai hình thức đánh giá cơ bản để hiển thị ra giao diện cho người dùng. Những tiêu chí khác tương tự, bạn có thể tham khảo tại trang mã nguồn mở của chúng tôi.
 \par
-Tiếp đến, chúng tôi sẽ trình bày về cách chúng tôi chấm điểm trang web của bạn dựa trên những kết quả này. Chúng tôi sử dụng thư viện jQuery để đọc các class hiển thị icon ở cột Kết quả. Với class \textbf{\texttt{fa-check-circle}} xuất hiện ở cột Kết quả có nghĩa là yếu tố đó đã vượt qua bài kiểm tra của chúng tôi. Dựa vào vị trí đó, chúng tôi tìm tiếp đến thẻ \textbf{\texttt{input}} nơi chứa trọng số để đánh giá tiêu chí đó được thể hiện ở thuộc tính \textbf{\texttt{value}}.
+Tiếp đến, chúng tôi sẽ trình bày về cách chúng tôi chấm điểm trang web của bạn dựa trên những kết quả này. Chúng tôi sử dụng thư viện jQuery để đọc các class hiển thị icon ở cột Kết quả. Với class \textbf{\texttt{fa-times-circle}} xuất hiện ở cột Kết quả có nghĩa là yếu tố đó đã không vượt qua bài kiểm tra của chúng tôi. Dựa vào vị trí đó, chúng tôi tìm tiếp đến thẻ \textbf{\texttt{input}} nơi chứa trọng số để đánh giá tiêu chí đó được thể hiện ở thuộc tính \textbf{\texttt{value}}.
+\par
+Sau đó sử dụng công thức sau để tính diểm đánh giá cho website: \[\displaystyle\frac{tongtrongso - trongsovipham}{tongtrongso}*100\]
 \par
 Đoạn code này được chúng tôi đặt trong block \textbf{\texttt{script}} để có thể kế thừa giao diện từ bố cục chung trong file \textbf{\texttt{base.html}}:
 \begin{lstlisting}[language=html]
 {% block script %}
 <script>
 $(document).ready(function() {
-    var total = 0;
-    $("#tbCheck .point").each(function() {
-        total += parseInt($(this)[0].value)
-    });
+    var total = 52;
     var score = 0;
-    $("#tbCheck .fa-check-circle").each(function() {
+    $("#tbCheck .fa-times-circle").each(function() {
         score += parseInt($(this).parent().children().last()[0].value)
     });
-    score = Math.round(score / total * 100);
-})
+    score = Math.round((total - score) / total * 100);
 </script>
 {% endblock %}
 \end{lstlisting}
