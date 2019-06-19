@@ -1,12 +1,12 @@
 \chapter{Kết luận đánh giá}
-Trên đây, chúng tôi đã trình bày về dự án \textbf{\textit{Ứng dụng Python vào lập trình website đánh giá SEO}}. Với việc sử dụng ngôn ngữ lập trình Python cùng với các thư viện hỗ trợ như \textbf{\texttt{Django}}, \textbf{\texttt{requests}}, \textbf{\texttt{lxml}},\ldots đã giúp chúng tôi hoàn thành dự án trong thời gian chưa đến hai tháng nhưng vẫn đảm bảo những kiến trúc xây dựng phần mềm như thiết kế \textbf{\texttt{MTV}} trong \textbf{\texttt{Django}}, bảo vệ trang web bằng \textbf{\texttt{reCaptcha}},\ldots
+Trên đây, chúng tôi đã trình bày về dự án \textbf{\textit{Ứng dụng Python vào lập trình website đánh giá SEO}}. Website cho phép người dùng kiểm tra các thành phần cấu trúc SEO từ liên kết website người dùng nhập vào, sau đó phân tích và hiển thị kết quả. Việc sử dụng Python cùng với các thư viện hỗ trợ như \textbf{\texttt{Django}}, \textbf{\texttt{Requests}}, \textbf{\texttt{Lxml}},\ldots ứng dụng có tốc độ xử lý website khá nhanh và có thể dễ dàng mở rộng hơn sau này.
 \par
-Hướng tiếp theo, chúng tôi sẽ tiếp tục cải thiện về hiệu suất trang web, thử nghiệm các phương pháp để thu thập được dữ liệu mã nguồn từ các website được render bằng JavaScript. Tiếp đến, cải thiện giao diện và đăng tải thêm các bài viết để người dùng tham khảo những phương pháp tối ưu hóa SEO.
+Trong quá trình phát triển, chúng tôi gặp khó khăn khi phân tích các website vì chúng có các kiểu cú pháp không giống nhau, do đó chúng tôi cần phải xây dựng thêm các hàm để lọc lại kết quả rồi mới hiển thị ra giao diện. Bên cạnh đó, ứng dụng của chúng tôi cũng gặp vấn đề với các thành phần được tạo ra bằng JavaScript, hiện tại thư viện chúng tôi đang sử dụng không thể lấy được mã nguồn từ phần nội dung này.
 \par
-Hiện tại, ứng dụng của chúng tôi đã được triển khai thành công trên Heroku, người dùng có thể truy cập và thử dùng các tính năng mà chúng tôi đã phát triển.
+Hướng phát triển tiếp theo, chúng tôi sẽ thử các thư viện khác nhau nhằm khắc phục nhược điểm đối với những website chưa thể lấy được mã nguồn hoàn toàn mà vẫn đảm bảo tốc độ xử lý nhanh chóng. Xây dựng công cụ giúp người dùng có thể đánh giá mật độ từ khóa trong nội dung bài viết. Ngoài ra, chúng tôi sẽ mở rộng thêm phạm vi đánh giá SEO về các mặt như nội dung website, backlink, từ khóa, tốc độ tải trang,\ldots
 \par
-Website: \url{https://checkseo.herokuapp.com}
-\par
-Mã nguồn: \url{https://github.com/pythinh/check-seo}
-\par
-Liên hệ: \href{mailto:npthinh1996@gmail.com}{npthinh1996@gmail.com}
+Hiện tại, ứng dụng của chúng tôi đã được xây dựng thành công trên nền tảng Heroku, người dùng có thể truy cập và thử dùng các tính năng mà chúng tôi đã phát triển:
+\begin{itemize}
+    \item Website: \url{https://danhgiaweb.top}
+    \item Mã nguồn: \url{https://github.com/pythinh/check-seo}
+\end{itemize}

@@ -3,7 +3,23 @@ Phần này chúng tôi sẽ trình bày quá trình chúng tôi xây dựng và
 \par
 Lưu ý, trong bài báo cáo này chúng tôi đang sử dụng môi trường lập trình là Windows nên có thể có những câu lệnh sẽ khác với MacOS, Linux hay những môi trường lập trình khác.
 \section{Khởi tạo project}
+\subsection{Cài đặt Python}
+Để cài đặt Python vào máy tính, bạn truy cập vào trang chủ của Python là \url{https://www.python.org}, sau đó chọn mục \textbf{\texttt{Downloads}} và cài đặt theo môi trường hệ điều hành trên máy của bạn.
+\par
+Với chúng tôi, chúng tôi chọn cách cài đặt Python gián tiếp bằng Miniconda. Theo cách này, chúng tôi có thể dễ dàng nâng cấp phiên bản Python mà không phải cài lại hoàn toàn. Tương tự như cách cài đặt trực tiếp, bạn truy cập vào trang \url{https://docs.conda.io/en/latest/miniconda.html}, chọn tải về file cài đặt phù hợp với hệ điều hành của mình và tiến hành cài đặt theo hướng dẫn.
+\par
+Sau khi cài đặt hoàn tất, để kiểm tra xem Python đã cài thành công, bạn mở trình \textbf{\texttt{command line}} và nhập vào:
+\begin{lstlisting}[language=bash]
+\>python --version
+\end{lstlisting}
+\par
+Kết quả trả về có thể là:
+\begin{lstlisting}
+Python 3.7.3
+\end{lstlisting}
 \subsection{Tạo thư mục và thiết lập môi trường}
+Đến đây bạn đã cài đặt thành công Python vào máy tính. Tiếp theo chúng tôi sẽ hướng dẫn bạn tạo môi trường cho từng dự án. Việc tạo môi trường ảo Python cho từng dự án sẽ đảm bảo các phiên bản thư viện trong các dự án khác nhau mà không làm ảnh hưởng đến những thư viện cài đặt gốc.
+\par
 Chúng tôi quyết định đặt tên dự án của mình là \textbf{\texttt{check-seo}}, do đó chúng tôi sẽ tạo thư mục mới để lưu trữ code.
 \par
 Để tạo mới thư mục, bạn có thể click chuột phải $\rightarrow$ chọn New $\rightarrow$ chọn Folder $\rightarrow$ đặt tên \textbf{\texttt{check-seo}}.
@@ -18,9 +34,7 @@ Di chuyển khung làm việc vào thư mục project vừa tạo.
 \>cd check-seo
 \end{lstlisting}
 \par
-Tại đây, chúng tôi sẽ tiến hành cài đặt môi trường để lập trình cho ứng dụng Python của mình. Đảm bảo là bạn đã cài đặt xong Python theo hướng dẫn ở phần \textbf{\textit{Nền tảng lý thuyết}}, để tránh dài dòng, chúng tôi sẽ hạn chế nhắc lại những kiến thức đã được trình bày ở phần trước.
-\par
-Tại khung cửa sổ của PowerShell, nhập lệnh sau để cài đặt môi trường:
+Tại đây, chúng tôi sẽ tiến hành cài đặt môi trường để lập trình cho ứng dụng Python của mình. Trong khung cửa sổ của PowerShell, nhập lệnh sau để cài đặt môi trường:
 \begin{lstlisting}[language=bash]
 \>python -m venv ./venv
 \end{lstlisting}
@@ -811,7 +825,7 @@ Bên dưới, chúng tôi sẽ đưa ra cho bạn thấy được khi ứng dụ
 \begin{center}
     \begin{figure}[!ht]
         \centering
-        \includegraphics[width=120mm]{images/trang-loi-404.png}
-        \caption{Trang lỗi 404 của ứng dụng}
+        \includegraphics[width=120mm]{images/trang-recaptcha.png}
+        \caption{Trang kiểm tra reCaptcha của ứng dụng}
     \end{figure}
 \end{center}
