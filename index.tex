@@ -1,4 +1,4 @@
-\documentclass[12pt,a4paper,twoside]{report}
+\documentclass[12pt,a4paper]{report}
 \usepackage[utf8]{vietnam}
 \usepackage[top=20mm,right=20mm,bottom=20mm,left=30mm]{geometry}
 \usepackage[unicode]{hyperref}
@@ -6,10 +6,10 @@
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[LE,RO]{\textit{LUẬN VĂN TỐT NGHIỆP}}
-\fancyhead[RE,LO]{\textit{NGUYỄN PHƯỚC THỊNH}}
-\fancyfoot[LE,RO]{\textit{TRANG \thepage}}
-\fancyfoot[RE,LO]{\textit{\leftmark}}
+\fancyhead[R]{\textit{LUẬN VĂN TỐT NGHIỆP}}
+\fancyhead[L]{\textit{NGUYỄN PHƯỚC THỊNH}}
+\fancyfoot[R]{\textit{TRANG \thepage}}
+\fancyfoot[L]{\textit{\leftmark}}
 
 \renewcommand{\headrulewidth}{1pt}
 \renewcommand{\footrulewidth}{1pt}
@@ -39,12 +39,10 @@
 \begin{document}
 % Trang bìa
 \include{title}
+% Trang cảm ơn
+\include{thanks}
 
 \setlength{\headheight}{18pt}
-
-\newpage
-\thispagestyle{empty}
-\cleardoublepage
 
 \newpage
 \tableofcontents
